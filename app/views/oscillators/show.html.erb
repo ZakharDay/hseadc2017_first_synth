@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Frequency:</strong>
+  <%= @oscillator.frequency %>
+</p>
+
+<p>
+  <strong>Wave:</strong>
+  <%= @oscillator.wave %>
+</p>
+
+<p>
+  <strong>Detune:</strong>
+  <%= @oscillator.detune %>
+</p>
+
+<%= link_to 'Edit', edit_oscillator_path(@oscillator) %> |
+<%= link_to 'Back', oscillators_path %>

@@ -1,0 +1,32 @@
+<%= form_with(model: oscillator, local: true) do |form| %>
+  <% if oscillator.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(oscillator.errors.count, "error") %> prohibited this oscillator from being saved:</h2>
+
+      <ul>
+        <% oscillator.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :frequency %>
+    <%= form.number_field :frequency %>
+  </div>
+
+  <div class="field">
+    <%= form.label :wave %>
+    <%= form.text_field :wave %>
+  </div>
+
+  <div class="field">
+    <%= form.label :detune %>
+    <%= form.number_field :detune %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
