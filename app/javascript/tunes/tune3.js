@@ -1,6 +1,6 @@
 import Tone from 'tone'
 
-export default function tune1() {
+export default function tune3() {
   let reverb = new Tone.Reverb({
     decay: 1.5,
     preDelay: 0.01
@@ -41,29 +41,29 @@ export default function tune1() {
     oscillator: {
       // fatsawtooth
       type: 'fatsawtooth',
-      count: 3,
-      spread: 30,
-      phase: 10
+      count: 1
+      // spread: 30,
+      // phase: 10
       // fadeIn: 4
-    },
-    envelope: {
-      attack: 1,
-      decay: 1,
-      sustain: 1,
-      release: 5,
-      attackCurve: 'exponential'
     }
+    // envelope: {
+    //   attack: 1,
+    //   decay: 1,
+    //   sustain: 1,
+    //   release: 5,
+    //   attackCurve: 'exponential'
+    // }
   }).toMaster()
 
-  synth.connect(panner)
-  synth.connect(filter)
-  synth.connect(cheby)
-  // synth.connect(crusher)
-  synth.connect(dist)
-  synth.connect(feedbackDelay)
-  synth.connect(tremolo)
-  synth.connect(phaser)
-  synth.connect(reverb)
+  // synth.connect(panner)
+  // synth.connect(filter)
+  // synth.connect(cheby)
+  // // synth.connect(crusher)
+  // synth.connect(dist)
+  // synth.connect(feedbackDelay)
+  // synth.connect(tremolo)
+  // synth.connect(phaser)
+  // synth.connect(reverb)
 
   let synth2 = new Tone.PolySynth(1, Tone.Synth, {
     oscillator: {
@@ -159,7 +159,7 @@ export default function tune1() {
         time: '4:0:0',
         noteName: 'E2',
         velocity: 1,
-        duration: '2n'
+        duration: '4n'
       },
       {
         time: '5:0:0',
@@ -180,10 +180,10 @@ export default function tune1() {
         duration: '4n'
       }
     ]
-  ).start(0)
+  ) //.start(0)
 
-  part.loop = true
-  part.loopEnd = '8m'
+  // part.loop = true
+  // part.loopEnd = '8m'
 
   let part2 = new Tone.Part(
     function(time, note) {
@@ -244,10 +244,10 @@ export default function tune1() {
         duration: '32n'
       }
     ]
-  ).start(0)
+  ) //.start(0)
 
-  part2.loop = true
-  part2.loopEnd = '2m'
+  // part2.loop = true
+  // part2.loopEnd = '2m'
 
   let part3 = new Tone.Part(
     function(time, note) {
