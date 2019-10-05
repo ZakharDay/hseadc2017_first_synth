@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'zeppelin_53bold';
+  src: asset-url('zeppelin53-bold.ttf');
+  src: local('Zeppelin53-Bold'), local('Zeppelin53'),
+    asset-url('zeppelin53-bold.woff') format('woff'),
+    asset-url('zeppelin53-bold.ttf') format('truetype');
+}
+
+* {
+  outline: none;
+  user-select: none;
+  box-sizing: border-box;
+}

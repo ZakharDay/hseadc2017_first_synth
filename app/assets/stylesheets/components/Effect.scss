@@ -1,0 +1,25 @@
+.effectsBoard {
+  display: flex;
+}
+
+.Effect {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid blue;
+  font-family: 'zeppelin_53bold';
+
+  h1,
+  h2,
+  h3 {
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .controlsContainer {
+    padding: 10px 0 40px;
+
+    .controlsRow {
+      padding: 15px 0;
+    }
+  }
+}
