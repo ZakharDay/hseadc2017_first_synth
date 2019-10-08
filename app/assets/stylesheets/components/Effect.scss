@@ -1,11 +1,18 @@
 .effectsBoard {
   display: flex;
+  align-items: stretch;
+
+  & > * {
+    height: 100%;
+    min-height: 100%;
+  }
 }
 
 .Effect {
-  width: 300px;
-  padding: 20px;
-  border: 1px solid blue;
+  width: 220px;
+  height: 340px;
+  // padding: 20px;
+  border: 1px solid black;
   font-family: 'zeppelin_53bold';
 
   h1,
@@ -15,8 +22,14 @@
     text-align: center;
   }
 
+  h2 {
+    // margin-top: 10px;
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+
   .controlsContainer {
-    padding: 10px 0 40px;
+    padding: 10px;
 
     .controlsRow {
       padding: 15px 0;

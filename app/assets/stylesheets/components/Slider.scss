@@ -1,16 +1,24 @@
 .Slider {
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 1px;
+  margin-bottom: 16px;
   // background: grey;
-  border: 1px solid lightgrey;
+  border: 1px solid black;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 
   .thumb {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    top: -5px;
+    left: -5px;
+    width: 9px;
+    height: 9px;
+    // margin-left: -10px;
     border-radius: 10px;
-    background: blue;
+    background: black;
     // transition: all 0.1s ease;
   }
 }

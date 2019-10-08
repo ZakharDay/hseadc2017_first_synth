@@ -1,21 +1,25 @@
+import classnames from 'classnames'
 import React from 'react'
 
 export default class Button extends React.Component {
   constructor(props) {
     super(props)
-    this.handleClick = this.handleClick.bind(this)
-  }
-
-  handleClick() {
-    this.props.handleClick('button')
   }
 
   render() {
-    const { name, color } = this.props
+    const { name, property, option, current, handleClick } = this.props
+
+    const classes = classnames({
+      Button: true,
+      on: option == current
+    })
 
     return (
-      <div onClick={this.handleClick} style={{ color: color }}>
-        Button {name} {color}
+      <div
+        className={classes}
+        onClick={() => handleClick(name, property, option)}
+      >
+        {option}
       </div>
     )
   }

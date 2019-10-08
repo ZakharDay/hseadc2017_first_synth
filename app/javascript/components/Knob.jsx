@@ -63,8 +63,9 @@ export default class Knob extends React.Component {
   }
 
   moveKnob(screenY) {
-    const min = parseInt(this.props.min)
-    const max = parseInt(this.props.max)
+    const { name, min, max, handleValueChange } = this.props
+    const minimum = parseInt(min)
+    const maximum = parseInt(max)
     const oldScreenY = this.state.screenY
     const { deg } = this.state
     const difference = screenY - oldScreenY
@@ -72,13 +73,13 @@ export default class Knob extends React.Component {
 
     value += difference
 
-    if (value < min) {
-      value = min
-    } else if (value > max) {
-      value = max
+    if (value < minimum) {
+      value = minimum
+    } else if (value > maximum) {
+      value = maximum
     }
 
-    this.props.handleValueChange(value)
+    handleValueChange(name, value)
 
     this.setState({
       screenY: screenY,

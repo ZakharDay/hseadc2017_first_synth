@@ -1,12 +1,14 @@
 .ToggleSwitch {
   display: inline-block;
   width: 100%;
-  height: 100px;
-  background: lightgrey;
-  line-height: 100px;
+  height: 40px;
+  background: black;
+  color: white;
+  line-height: 40px;
   text-align: center;
   text-transform: uppercase;
   font-weight: bold;
+  font-size: 10px;
 
   &.sine {
     color: red;
@@ -22,7 +24,7 @@
   }
 
   &.on {
-    background: blue;
+    background: red;
     color: white;
   }
 }

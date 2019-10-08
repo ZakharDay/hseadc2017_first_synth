@@ -1,9 +1,7 @@
 import React from 'react'
 
-import PlaySwitch from '../PlaySwitch'
 import ToggleSwitch from '../ToggleSwitch'
 import Slider from '../Slider'
-import Knob from '../Knob'
 
 export default class FeedbackDelay extends React.Component {
   constructor(props) {
@@ -11,45 +9,43 @@ export default class FeedbackDelay extends React.Component {
   }
 
   render() {
-    let name = 'feedbackDelay'
     const {
+      name,
       effect,
       on,
+      wet,
       toggleEffect,
       changeEffectWetValue,
-      changeFeedbackDelayValue
+      changeEffectValue
     } = this.props
 
     return (
       <div className="Effect">
-        <h1>Delay</h1>
+        <ToggleSwitch value="Delay" current={on} handleClick={toggleEffect} />
 
         <div className="controlsContainer">
           <div className="controlsRow">
             <h2>Wet</h2>
-
             <Slider
               name={name}
+              property="wet"
               min="0"
               max="1"
-              value={effect.wet.value}
+              value={wet}
               handleValueChange={changeEffectWetValue}
             />
-          </div>
 
-          <div className="controlsRow">
             <h2>Max Delay</h2>
             <Slider
               name={name}
+              property="maxDelay"
               min="0"
               max="100"
               value={effect.maxDelay}
-              handleValueChange={changeFeedbackDelayValue}
+              handleValueChange={changeEffectValue}
             />
           </div>
         </div>
-
-        <ToggleSwitch value="Delay" current={on} handleClick={toggleEffect} />
       </div>
     )
   }
