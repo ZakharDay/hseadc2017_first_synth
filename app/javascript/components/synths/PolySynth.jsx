@@ -2,8 +2,11 @@ import _ from 'lodash'
 import React from 'react'
 import Tone from 'tone'
 
-import ToggleSwitch from './ToggleSwitch'
-import Slider from './Slider'
+import PlaySwitch from '../controls/PlaySwitch'
+import ToggleSwitch from '../controls/ToggleSwitch'
+import Slider from '../controls/Slider'
+import Knob from '../controls/Knob'
+import ButtonSet from '../controls/ButtonSet'
 
 export default class PolySynth extends React.Component {
   constructor(props) {

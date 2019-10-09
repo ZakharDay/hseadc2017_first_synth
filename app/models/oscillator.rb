@@ -1,2 +1,0 @@
-class Oscillator < ApplicationRecord
-end

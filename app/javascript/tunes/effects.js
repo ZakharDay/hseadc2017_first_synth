@@ -84,16 +84,16 @@ function chorus() {
   return f
 }
 
-function convolver() {
-  let f = new Tone.Convolver({
-    onload: Tone.noOp,
-    normalize: true
-  })
-
-  f.wet.value = 0
-
-  return f
-}
+// function convolver() {
+//   let f = new Tone.Convolver({
+//     onload: Tone.noOp,
+//     normalize: true
+//   })
+//
+//   f.wet.value = 0
+//
+//   return f
+// }
 
 function distortion() {
   let f = new Tone.Distortion({
@@ -173,6 +173,10 @@ function pingPongDelay() {
     delayTime: 0.25,
     maxDelayTime: 1
   })
+
+  f.wet.value = 0
+
+  return f
 }
 
 function pitchShift() {
@@ -247,7 +251,6 @@ export {
   bitCrusher,
   chebyshev,
   chorus,
-  convolver,
   distortion,
   feedbackDelay,
   feedbackEffect,

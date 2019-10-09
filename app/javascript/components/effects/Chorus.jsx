@@ -1,10 +1,10 @@
 import React from 'react'
 
-import PlaySwitch from '../PlaySwitch'
-import ToggleSwitch from '../ToggleSwitch'
-import Slider from '../Slider'
-import Knob from '../Knob'
-import ButtonSet from '../ButtonSet'
+import PlaySwitch from '../controls/PlaySwitch'
+import ToggleSwitch from '../controls/ToggleSwitch'
+import Slider from '../controls/Slider'
+import Knob from '../controls/Knob'
+import ButtonSet from '../controls/ButtonSet'
 
 export default class Chorus extends React.Component {
   constructor(props) {

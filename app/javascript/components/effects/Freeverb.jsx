@@ -1,10 +1,10 @@
 import React from 'react'
 
-import PlaySwitch from '../PlaySwitch'
-import ToggleSwitch from '../ToggleSwitch'
-import Slider from '../Slider'
-import Knob from '../Knob'
-import ButtonSet from '../ButtonSet'
+import PlaySwitch from '../controls/PlaySwitch'
+import ToggleSwitch from '../controls/ToggleSwitch'
+import Slider from '../controls/Slider'
+import Knob from '../controls/Knob'
+import ButtonSet from '../controls/ButtonSet'
 
 export default class Freeverb extends React.Component {
   constructor(props) {
@@ -47,10 +47,10 @@ export default class Freeverb extends React.Component {
             <h2>Room Size</h2>
             <Slider
               name={name}
-              property="frequency.value"
+              property="roomSize.value"
               min="0"
               max="1"
-              value={effect.roomSize}
+              value={effect.roomSize.value}
               handleValueChange={changeEffectValue}
             />
 
