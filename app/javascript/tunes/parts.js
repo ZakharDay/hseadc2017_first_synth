@@ -62,6 +62,9 @@ function part1(synth) {
     ]
   )
 
+  part.loop = true
+  part.loopEnd = '8m'
+
   return part
 }
 

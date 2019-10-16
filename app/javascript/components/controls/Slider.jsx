@@ -7,14 +7,7 @@ export default class Slider extends React.Component {
 
     this.state = {
       mouseDown: false,
-      area: {
-        left: 0,
-        right: 0,
-        width: 0
-      },
-      thumb: {
-        left: 0
-      }
+      thumbLeft: 0
     }
 
     this.slideArea = React.createRef()
@@ -31,17 +24,11 @@ export default class Slider extends React.Component {
   }
 
   componentDidMount() {
+    const { value } = this.props
     const { x, width } = this.slideArea.current.getBoundingClientRect()
 
     this.setState({
-      area: {
-        left: x,
-        right: x + width,
-        width: width
-      },
-      thumb: {
-        left: this.calculateLeft(width)
-      }
+      thumbLeft: this.calculateLeft(width, value)
     })
 
     document.addEventListener('mouseup', this.handleMouseUp)
@@ -49,13 +36,10 @@ export default class Slider extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { width } = this.state.area
-    // console.log(nextProps.value)
-    // console.log(nextState)
-    // if (nextState.thumb.left == this.state.thumb.left) {
+    const { x, width } = this.slideArea.current.getBoundingClientRect()
+
     if (nextProps.value != this.props.value) {
-      // console.log('true')
-      nextState.thumb.left = this.calculateLeft(width)
+      nextState.thumbLeft = this.calculateLeft(width, nextProps.value)
     }
 
     return true
@@ -94,26 +78,27 @@ export default class Slider extends React.Component {
   }
 
   moveThumb(screenX) {
+    const { x, width } = this.slideArea.current.getBoundingClientRect()
     const { name, property, min, max, handleValueChange } = this.props
-    const areaLeft = this.state.area.left
-    const areaRight = this.state.area.right
-    const thumbLeft = screenX - areaLeft
+    const areaRight = this.calculateRight(x, width)
+    const thumbLeft = screenX - x
 
     if (thumbLeft >= 0 && screenX <= areaRight) {
-      const value = this.calculateValue(thumbLeft)
-      console.log(name)
+      const value = this.calculateValue(width, thumbLeft)
       handleValueChange(name, property, value)
 
       this.setState({
-        thumb: {
-          left: thumbLeft
-        }
+        thumbLeft
       })
     }
   }
 
-  calculateLeft(width) {
-    const { min, max, value } = this.props
+  calculateRight(x, width) {
+    return x + width
+  }
+
+  calculateLeft(width, value) {
+    const { min, max } = this.props
     const range = max - min
     const coef = range / width
     const left = value / coef
@@ -121,9 +106,8 @@ export default class Slider extends React.Component {
     return left
   }
 
-  calculateValue(thumbLeft) {
+  calculateValue(width, thumbLeft) {
     const { min, max } = this.props
-    const { width } = this.state.area
     const range = max - min
     const coef = range / width
     const value = thumbLeft * coef
@@ -132,10 +116,10 @@ export default class Slider extends React.Component {
   }
 
   render() {
-    const { left } = this.state.thumb
+    const { thumbLeft } = this.state
 
     const style = {
-      transform: `translateX(${left}px)`
+      transform: `translateX(${thumbLeft}px)`
     }
 
     return (

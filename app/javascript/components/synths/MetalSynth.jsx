@@ -8,7 +8,7 @@ import Slider from '../controls/Slider'
 import Knob from '../controls/Knob'
 import ButtonSet from '../controls/ButtonSet'
 
-export default class NoiseSynth extends React.Component {
+export default class MetalSynth extends React.Component {
   constructor(props) {
     super(props)
     _.bindAll(this, 'handleValueChange')

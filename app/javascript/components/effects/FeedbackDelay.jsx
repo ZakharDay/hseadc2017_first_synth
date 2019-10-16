@@ -42,6 +42,16 @@ export default class FeedbackDelay extends React.Component {
               handleValueChange={changeEffectWetValue}
             />
 
+            <h2>Delay Time</h2>
+            <Slider
+              name={name}
+              property="delayTime.value"
+              min="0"
+              max="100"
+              value={effect.delayTime.value}
+              handleValueChange={changeEffectValue}
+            />
+
             <h2>Max Delay</h2>
             <Slider
               name={name}

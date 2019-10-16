@@ -2,13 +2,25 @@ import _ from 'lodash'
 import React from 'react'
 import Tone from 'tone'
 
-import PlaySwitch from '../controls/PlaySwitch'
 import ToggleSwitch from '../controls/ToggleSwitch'
 import Slider from '../controls/Slider'
-import Knob from '../controls/Knob'
-import ButtonSet from '../controls/ButtonSet'
 
-export default class NoiseSynth extends React.Component {
+// {
+//   pitchDecay : 0.05 ,
+//   octaves : 10 ,
+//   oscillator : {
+//     type : 'sine'
+//   } ,
+//   envelope : {
+//     attack : 0.001 ,
+//     decay : 0.4 ,
+//     sustain : 0.01 ,
+//     release : 1.4 ,
+//     attackCurve : 'exponential'
+//   }
+// }
+
+export default class ToneSynth extends React.Component {
   constructor(props) {
     super(props)
     _.bindAll(this, 'handleValueChange')
