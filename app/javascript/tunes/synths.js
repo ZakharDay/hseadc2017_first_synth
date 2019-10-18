@@ -21,7 +21,7 @@ function polySynth() {
       count: 3,
       spread: 30,
       phase: 10,
-      fadeIn: 4
+      fadeIn: 1
     },
     envelope: {
       attack: 0.3,

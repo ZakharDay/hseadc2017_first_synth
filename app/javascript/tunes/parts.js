@@ -198,16 +198,68 @@ function part3(synth) {
   return part
 }
 
-// part1.start(0)
-// part1.loop = true
-// part1.loopEnd = '8m'
-//
-// part2.start(0)
-// part2.loop = true
-// part2.loopEnd = '2m'
-//
-// part3.start(0)
-// part3.loop = true
-// part3.loopEnd = '2m'
+function part4(synth) {
+  let velocity = 0.6
 
-export { part1, part2, part3 }
+  let part = new Tone.Part(
+    function(time, note) {
+      synth.triggerAttackRelease(
+        note.noteName,
+        note.duration,
+        time,
+        note.velocity
+      )
+    },
+    [
+      {
+        time: '0:0:0',
+        noteName: 'C5',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '0:0:2',
+        noteName: 'E5',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '0:1:0',
+        noteName: 'A4',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '0:3:0',
+        noteName: 'G4',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '1:0:2',
+        noteName: 'E4',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '1:1:0',
+        noteName: 'F4',
+        velocity: velocity,
+        duration: '16n'
+      },
+      {
+        time: '1:3:0',
+        noteName: 'A4',
+        velocity: velocity,
+        duration: '16n'
+      }
+    ]
+  )
+
+  part.loop = true
+  part.loopEnd = '2m'
+
+  return part
+}
+
+export { part1, part2, part3, part4 }

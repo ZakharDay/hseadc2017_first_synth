@@ -44,7 +44,7 @@ export default class ToneSynth extends React.Component {
             <h2>Attack</h2>
             <Slider
               name={synth}
-              property="attack"
+              property="envelope.attack"
               min="0"
               max="1"
               value={attack}
@@ -54,7 +54,7 @@ export default class ToneSynth extends React.Component {
             <h2>Decay</h2>
             <Slider
               name={synth}
-              property="decay"
+              property="envelope.decay"
               min="0"
               max="1"
               value={decay}
@@ -64,7 +64,7 @@ export default class ToneSynth extends React.Component {
             <h2>Sustain</h2>
             <Slider
               name={synth}
-              property="sustain"
+              property="envelope.sustain"
               min="0"
               max="1"
               value={sustain}
@@ -74,7 +74,7 @@ export default class ToneSynth extends React.Component {
             <h2>Release</h2>
             <Slider
               name={synth}
-              property="release"
+              property="envelope.release"
               min="0"
               max="2"
               value={release}

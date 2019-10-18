@@ -4,11 +4,14 @@ import React from 'react'
 import Tone from 'tone'
 
 import * as drums from '../tunes/drums'
+import * as drumLoops from '../tunes/drum-loops'
 import * as effects from '../tunes/effects'
 import * as parts from '../tunes/parts'
+import * as bassParts from '../tunes/bass-parts'
 import * as synths from '../tunes/synths'
 
 import Speed from '../components/utilities/Speed'
+import Volume from '../components/utilities/Volume'
 
 import AutoFilter from '../components/effects/AutoFilter'
 import AutoPanner from '../components/effects/AutoPanner'
@@ -34,344 +37,173 @@ import ToneSynth from '../components/synths/ToneSynth'
 import NoiseSynth from '../components/synths/NoiseSynth'
 import PolySynth from '../components/synths/PolySynth'
 
+let master = Tone.Master
+
+const defaultWetValue = 0.8
+
+let kickDrum = drums.kickDrum()
+let kickAutoFilter = effects.autoFilter()
+let kickFreeverb = effects.freeverb()
+let kickChebyshev = effects.chebyshev()
+
+let snareHit = drums.snareHit()
+let snareDrum = drums.snareDrum()
+let snareMembrane = drums.snareMembrane()
+
+let highHat = drums.snareHit().toMaster()
+
+// let snareAutoFilter = effects.autoFilter()
+let snareAutoFilter = new Tone.AutoFilter({
+  frequency: 10,
+  type: 'sine',
+  depth: 1,
+  baseFrequency: 500,
+  octaves: 2.6,
+  filter: {
+    type: 'highpass',
+    rolloff: -12,
+    Q: 1
+  }
+})
+
+let snareFreeverb = new Tone.Freeverb(0.75, 100)
+let snareEQ = new Tone.EQ3(-10, 0, -10)
+
+let snarePitchShift = new Tone.PitchShift({
+  pitch: 9.2,
+  windowSize: 0.01,
+  delayTime: 0,
+  feedback: 0.25
+})
+
+let bassSynth = synths.polySynth()
+let bassFreeverb = effects.freeverb()
+let bassPhaser = effects.phaser()
+
+let ambientSynth = synths.toneSynth()
+let ambientAutoFilter = effects.autoFilter()
+let ambientChorus = effects.chorus()
+let ambientDistortion = effects.distortion()
+let ambientFeedbackDelay = effects.feedbackDelay()
+let ambientFreeverb = effects.freeverb()
+let ambientPhaser = effects.phaser()
+let ambientPingPongDelay = effects.pingPongDelay()
+
+let leadSynth = synths.polySynth()
+let leadAutoPanner = effects.autoPanner()
+let leadAutoWah = effects.autoWah()
+let leadBitCrusher = effects.bitCrusher()
+let leadChebyshev = effects.chebyshev()
+let leadDistortion = effects.distortion()
+let leadFeedbackEffect = effects.feedbackEffect()
+let leadJcReverb = effects.jcReverb()
+let leadPitchShift = effects.pitchShift()
+let leadReverb = effects.reverb()
+let leadStereoWidener = effects.stereoWidener()
+let leadTremolo = effects.tremolo()
+let leadVibrato = effects.vibrato()
+
+let loop1 = new Tone.Loop(function(time) {
+  ambientSynth.triggerAttackRelease('C2', '8n', time)
+}, '4n')
+
+let loop3 = new Tone.Loop(function(time) {
+  leadSynth.triggerAttackRelease('C4', '1m', time)
+}, '1m')
+
+let loop4 = new Tone.Loop(function(time) {
+  ambientSynth.triggerAttackRelease('C4', '1m', time)
+}, '1m')
+
+let loop5 = new Tone.Loop(function(time) {
+  kickDrum.triggerAttackRelease('G0', '16n', time)
+}, '4n')
+
+kickDrum.chain(kickAutoFilter, kickFreeverb, kickChebyshev, Tone.Master)
+
+snareDrum.chain(
+  snarePitchShift,
+  snareEQ,
+  // snareFreeverb,
+  // smtng
+  master
+)
+
+snareDrum.chain(
+  snarePitchShift,
+  snareAutoFilter,
+  snareEQ,
+  // snareFreeverb,
+  //
+  master
+)
+
+snareMembrane.chain(snareEQ)
+snareHit.chain(snareEQ)
+snareDrum.connect(snareFreeverb)
+
+bassSynth.chain(bassFreeverb, bassPhaser, master)
+
+ambientSynth.chain(
+  ambientAutoFilter,
+  ambientChorus,
+  ambientDistortion,
+  ambientFeedbackDelay,
+  ambientFreeverb,
+  ambientPhaser,
+  ambientPingPongDelay,
+  master
+)
+// ambientPingPongDelay.toMaster()
+
+leadSynth.chain(
+  leadAutoPanner,
+  leadAutoWah,
+  leadBitCrusher,
+  leadChebyshev,
+  leadDistortion,
+  leadFeedbackEffect,
+  leadJcReverb,
+  leadPitchShift,
+  leadReverb,
+  leadStereoWidener,
+  leadTremolo,
+  leadVibrato,
+  master
+)
+
+let distortion = effects.distortion()
+
+let bassPart1 = bassParts.part1(bassSynth)
+bassPart1.mute = true
+bassPart1.start()
+
+let drumLoop1Kick = drumLoops.kick1(kickDrum)
+drumLoop1Kick.mute = true
+drumLoop1Kick.start()
+
+let drumLoop1Snare = drumLoops.snare1(snareHit, snareDrum, snareMembrane)
+drumLoop1Snare.mute = true
+drumLoop1Snare.start()
+
+let drumLoop2Kick = drumLoops.kick2(kickDrum)
+drumLoop2Kick.mute = true
+drumLoop2Kick.start()
+
+let drumLoop2Snare = drumLoops.snare2(snareHit, snareDrum, snareMembrane)
+drumLoop2Snare.mute = true
+drumLoop2Snare.start()
+
+let drumLoop3Snare = drumLoops.snare3(highHat)
+drumLoop3Snare.mute = true
+drumLoop3Snare.start()
+
 export default class Synth extends React.Component {
   constructor(props) {
     super(props)
 
-    const defaultWetValue = 0.8
-
-    let kickDrum = drums.kickDrum()
-    let kickAutoFilter = effects.autoFilter()
-    let kickFreeverb = effects.freeverb()
-    let kickChebyshev = effects.chebyshev()
-
-    // let snareDrum = drums.snareDrum()
-    let snareHit = new Tone.NoiseSynth({
-      noise: {
-        type: 'pink'
-      },
-      envelope: {
-        attack: 0.001,
-        decay: 0.1,
-        sustain: 0.5,
-        release: 1.75
-      }
-    })
-
-    let snareDrum = new Tone.MetalSynth({
-      harmonicity: 300, // 200 sounds like a timbali
-      resonance: 200, // 200 is nice
-      modulationIndex: 250,
-      envelope: {
-        decay: 0.25, // 0.2 gives some percusive snare sounds
-        sustain: 0.0125,
-        release: 0.05
-      },
-      volume: -5
-    })
-
-    let snareMembrane = new Tone.MembraneSynth()
-
-    // let snareAutoFilter = effects.autoFilter()
-    let snareAutoFilter = new Tone.AutoFilter({
-      frequency: 10,
-      type: 'sine',
-      depth: 1,
-      baseFrequency: 500,
-      octaves: 2.6,
-      filter: {
-        type: 'highpass',
-        rolloff: -12,
-        Q: 1
-      }
-    })
-
-    let snareFreeverb = new Tone.Freeverb(0.75, 100)
-    let snareEQ = new Tone.EQ3(-10, 0, -10)
-
-    let snarePitchShift = new Tone.PitchShift({
-      pitch: 9.2,
-      windowSize: 0.01,
-      delayTime: 0,
-      feedback: 0.25
-    })
-
-    let ambientSynth = synths.toneSynth()
-    let ambientAutoFilter = effects.autoFilter()
-    let ambientChorus = effects.chorus()
-    let ambientDistortion = effects.distortion()
-    let ambientFeedbackDelay = effects.feedbackDelay()
-    let ambientFreeverb = effects.freeverb()
-    let ambientPhaser = effects.phaser()
-    let ambientPingPongDelay = effects.pingPongDelay()
-
-    let leadSynth = synths.polySynth()
-    let leadAutoPanner = effects.autoPanner()
-    let leadAutoWah = effects.autoWah()
-    let leadBitCrusher = effects.bitCrusher()
-    let leadChebyshev = effects.chebyshev()
-    let leadDistortion = effects.distortion()
-    let leadFeedbackEffect = effects.feedbackEffect()
-    let leadJcReverb = effects.jcReverb()
-    let leadPitchShift = effects.pitchShift()
-    let leadReverb = effects.reverb()
-    let leadStereoWidener = effects.stereoWidener()
-    let leadTremolo = effects.tremolo()
-    let leadVibrato = effects.vibrato()
-
-    let loop1 = new Tone.Loop(function(time) {
-      ambientSynth.triggerAttackRelease('C2', '8n', time)
-    }, '4n')
-
-    let loop3 = new Tone.Loop(function(time) {
-      leadSynth.triggerAttackRelease('C4', '1m', time)
-    }, '1m')
-
-    let loop4 = new Tone.Loop(function(time) {
-      ambientSynth.triggerAttackRelease('C4', '1m', time)
-    }, '1m')
-
-    let loop5 = new Tone.Loop(function(time) {
-      kickDrum.triggerAttackRelease('G0', '16n', time)
-    }, '4n')
-
-    let drumLoop1Kick = new Tone.Sequence(
-      function(time, note) {
-        kickDrum.triggerAttackRelease(note, '16n', time)
-      },
-      [
-        'G0',
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        null,
-        null,
-        'G0',
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0',
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        'G0'
-        // 'G0',
-        // null,
-        // null,
-        // 'G0',
-        // null,
-        // null,
-        // null,
-        // 'G0',
-        // null,
-        // null,
-        // null,
-        // null,
-        // null,
-        // 'G0',
-        // null,
-        // null
-      ],
-      '16n'
-    )
-
-    var drumLoop1Snare = new Tone.Sequence(
-      function(time, note) {
-        // // snareDrum.frequency.setValueAtTime(note, time)
-        // snareDrum.triggerAttack(time, Math.random() * 0.5 + 0.5)
-        // // hitsnare.triggerAttackRelease('16n', time, 1)
-        // snareMembrane.triggerAttackRelease('E1', '16n', time, 1)
-        snareDrum.frequency.setValueAtTime(note, time)
-        snareDrum.triggerAttack(time, Math.random() * 0.5 + 0.5)
-        snareHit.triggerAttackRelease('16n', time, 1)
-        snareMembrane.triggerAttackRelease('E1', '16n', time, 1)
-      },
-      [
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        51,
-        null,
-        null,
-        null
-        // null,
-        // null,
-        // null,
-        // null,
-        // null,
-        // null,
-        // 51,
-        // null,
-        // null,
-        // null,
-        // null,
-        // null,
-        // 51,
-        // null,
-        // null,
-        // null
-      ],
-      '16n'
-    )
-
-    kickDrum.chain(kickAutoFilter, kickFreeverb, kickChebyshev, Tone.Master)
-
-    snareDrum.chain(
-      snarePitchShift,
-      snareEQ,
-      // snareFreeverb,
-      // smtng
-      Tone.Master
-    )
-
-    snareDrum.chain(
-      snarePitchShift,
-      snareAutoFilter,
-      snareEQ,
-      // snareFreeverb,
-      //
-      Tone.Master
-    )
-
-    snareMembrane.chain(snareEQ)
-    snareHit.chain(snareEQ)
-    snareDrum.connect(snareFreeverb)
-
-    ambientSynth.chain(
-      ambientAutoFilter,
-      ambientChorus,
-      ambientDistortion,
-      ambientFeedbackDelay,
-      ambientFreeverb,
-      ambientPhaser,
-      ambientPingPongDelay,
-      Tone.Master
-    )
-    // ambientPingPongDelay.toMaster()
-
-    leadSynth.chain(
-      leadAutoPanner,
-      leadAutoWah,
-      leadBitCrusher,
-      leadChebyshev,
-      leadDistortion,
-      leadFeedbackEffect,
-      leadJcReverb,
-      leadPitchShift,
-      leadReverb,
-      leadStereoWidener,
-      leadTremolo,
-      leadVibrato,
-      Tone.Master
-    )
-
     this.state = {
+      highHat,
       kickDrum,
       kickAutoFilter: {
         name: 'kickAutoFilter',
@@ -416,6 +248,23 @@ export default class Synth extends React.Component {
         wet: defaultWetValue,
         on: false
       },
+      bassSynth,
+      bassFreeverb: {
+        name: 'bassFreeverb',
+        effect: bassFreeverb,
+        wet: defaultWetValue,
+        on: false
+      },
+      bassPhaser: {
+        name: 'bassPhaser',
+        effect: bassPhaser,
+        wet: defaultWetValue,
+        on: false
+      },
+      bassPart1: {
+        part: bassPart1,
+        on: false
+      },
       ambientSynth,
       ambientAutoFilter: {
         name: 'ambientAutoFilter',
@@ -457,6 +306,10 @@ export default class Synth extends React.Component {
         name: 'ambientPingPongDelay',
         effect: ambientPingPongDelay,
         wet: defaultWetValue,
+        on: false
+      },
+      ambientPart1: {
+        part: parts.part4(ambientSynth),
         on: false
       },
       leadSynth,
@@ -560,9 +413,23 @@ export default class Synth extends React.Component {
         loop: drumLoop1Snare,
         on: false
       },
+      drumLoop2Kick: {
+        loop: drumLoop2Kick,
+        on: false
+      },
+      drumLoop2Snare: {
+        loop: drumLoop2Snare,
+        on: false
+      },
+      drumLoop3Snare: {
+        part: drumLoop3Snare,
+        on: false
+      },
+      drumLoopPlaying: 'none',
       lastChange: Date.now(),
       timeout: 100,
-      bpm: 90
+      bpm: 90,
+      volume: 10
     }
 
     _.bindAll(
@@ -574,6 +441,7 @@ export default class Synth extends React.Component {
       'toggleDrum',
       'togglePart',
       'changeBpmValue',
+      'changeVolumeValue',
       'changeSynthValue',
       'toggleEffect',
       'changeEffectWetValue',
@@ -606,6 +474,8 @@ export default class Synth extends React.Component {
 
     Tone.Transport.bpm.value = this.state.bpm
     Tone.Transport.start()
+    // Tone.context.lookAhead = 1
+    // Tone.Transport.start('+1')
   }
 
   copyAll() {
@@ -649,31 +519,68 @@ export default class Synth extends React.Component {
   toggleDrum(drumLoop) {
     let drumLoopSnare = this.state[drumLoop + 'Snare']
     let drumLoopKick = this.state[drumLoop + 'Kick']
+    let { drumLoopPlaying } = this.state
+    let drumLoopSnarePlaying = this.state[drumLoopPlaying + 'Snare']
+    let drumLoopKickPlaying = this.state[drumLoopPlaying + 'Kick']
 
-    if (drumLoopSnare.on == true && drumLoopKick.on == true) {
-      drumLoopSnare.loop.stop()
-      drumLoopKick.loop.stop()
-    } else {
-      drumLoopSnare.loop.start('0m')
-      drumLoopKick.loop.start('0m')
+    if (drumLoopPlaying != 'none') {
+      drumLoopSnarePlaying.loop.mute = true
+      drumLoopKickPlaying.loop.mute = true
     }
 
-    this.setState({
-      [`${drumLoop + 'Snare'}`]: {
-        loop: drumLoopSnare.loop,
-        on: !drumLoopSnare.on
-      },
-      [`${drumLoop + 'Kick'}`]: {
-        loop: drumLoopKick.loop,
-        on: !drumLoopKick.on
-      }
-    })
+    if (drumLoopSnare.on != true) {
+      drumLoopSnare.loop.mute = false
+      // drumLoopSnare.loop.start()
+    }
+
+    if (drumLoopKick.on != true) {
+      drumLoopKick.loop.mute = false
+      // drumLoopKick.loop.start()
+    }
+
+    if (drumLoopPlaying != 'none') {
+      this.setState({
+        [`${drumLoopPlaying + 'Snare'}`]: {
+          loop: drumLoopSnarePlaying.loop,
+          on: !drumLoopSnarePlaying.on
+        },
+        [`${drumLoopPlaying + 'Kick'}`]: {
+          loop: drumLoopKickPlaying.loop,
+          on: !drumLoopKickPlaying.on
+        },
+        [`${drumLoop + 'Snare'}`]: {
+          loop: drumLoopSnare.loop,
+          on: !drumLoopSnare.on
+        },
+        [`${drumLoop + 'Kick'}`]: {
+          loop: drumLoopKick.loop,
+          on: !drumLoopKick.on
+        },
+        drumLoopPlaying: drumLoop
+      })
+    } else {
+      this.setState({
+        [`${drumLoop + 'Snare'}`]: {
+          loop: drumLoopSnare.loop,
+          on: !drumLoopSnare.on
+        },
+        [`${drumLoop + 'Kick'}`]: {
+          loop: drumLoopKick.loop,
+          on: !drumLoopKick.on
+        },
+        drumLoopPlaying: drumLoop
+      })
+    }
   }
 
   toggleLoop(loopName) {
     let { loop, on } = this.state[loopName]
 
-    on == true ? loop.stop() : loop.start('0m')
+    if (on == true) {
+      loop.mute = true
+    } else {
+      loop.mute = false
+    }
 
     this.setState({
       [`${loopName}`]: {
@@ -686,7 +593,11 @@ export default class Synth extends React.Component {
   togglePart(partName) {
     let { part, on } = this.state[partName]
 
-    on == true ? part.stop(0) : part.start(0)
+    if (on == true) {
+      part.mute = true
+    } else {
+      part.mute = false
+    }
 
     this.setState({
       [`${partName}`]: {
@@ -698,17 +609,40 @@ export default class Synth extends React.Component {
 
   changeBpmValue(synthName, effectName, value) {
     Tone.Transport.bpm.value = Math.round(value)
+    Tone.Master.volume = Math.round(value)
 
     this.setState({
       bpm: Math.round(value)
     })
   }
 
+  changeVolumeValue(synthName, effectName, value) {
+    Tone.Master.volume.value = Math.round(value)
+
+    this.setState({
+      volume: Math.round(value)
+    })
+  }
+
   changeSynthValue(synthName, effectName, value) {
+    let regexBefore = /(.*)\./
+    let regexAfter = /\.(.*)/
     let synth = this.state[synthName]
+    let effectNameNamespace = effectName.match(regexBefore)[1]
+    let effectNameInNamespace = effectName.match(regexAfter)[1]
     // let { envelope, oscillator } = synth.instrument
-    let { envelope } = synth
-    synth.envelope[effectName] = value
+    // let { envelope } = synth
+    // console.log('test', effectName, effectName.match(regexAfter))
+
+    if (synthName == 'bassSynth' || synthName == 'leadSynth') {
+      if (effectNameNamespace == 'oscillator') {
+        synth.voices[0].oscillator[effectNameInNamespace] = value
+      } else if (effectNameNamespace == 'envelope') {
+        synth.voices[0].envelope[effectNameInNamespace] = value
+      }
+    } else {
+      synth[effectName] = value
+    }
 
     this.setState({
       [`${synthName}`]: synth
@@ -955,6 +889,9 @@ export default class Synth extends React.Component {
       snarePitchShift,
       snareEQ,
       snareFreeverb,
+      bassSynth,
+      bassFreeverb,
+      bassPhaser,
       ambientSynth,
       ambientAutoFilter,
       ambientChorus,
@@ -963,6 +900,7 @@ export default class Synth extends React.Component {
       ambientFreeverb,
       ambientPhaser,
       ambientPingPongDelay,
+      ambientPart1,
       leadSynth,
       leadAutoPanner,
       leadAutoWah,
@@ -976,13 +914,16 @@ export default class Synth extends React.Component {
       leadStereoWidener,
       leadTremolo,
       leadVibrato,
+      bassPart1,
       loop1,
       loop4,
       loop5,
       part1,
+      drumLoop3Snare,
       drumLoop1Kick,
       drumLoop1Snare,
-      bpm
+      bpm,
+      volume
     } = this.state
 
     let {
@@ -991,6 +932,7 @@ export default class Synth extends React.Component {
       toggleDrum,
       togglePart,
       changeBpmValue,
+      changeVolumeValue,
       changeSynthValue,
       changeEffectWetValue,
       changeEffectValue,
@@ -999,13 +941,22 @@ export default class Synth extends React.Component {
       savePreset
     } = this
 
+    distortion.distortion = 10
+
     return (
       <div>
+        <div>{distortion.distortion}</div>
+
         <div onClick={this.copyAll}>COPY ALL</div>
 
         <div className="effectsBoard">
           <Speed bpm={bpm} changeBpmValue={changeBpmValue} />
+          <Volume volume={volume} changeVolumeValue={changeVolumeValue} />
         </div>
+
+        <div onClick={() => toggleDrum('drumLoop1')}>DRUM LOOP 1</div>
+        <div onClick={() => toggleDrum('drumLoop2')}>DRUM LOOP 2</div>
+        <div onClick={() => togglePart('drumLoop3Snare')}>DRUM LOOP 3</div>
 
         <div className="effectsBoard">
           <MembraneSynth
@@ -1034,6 +985,7 @@ export default class Synth extends React.Component {
             changeEffectValue={changeEffectValue}
           />
         </div>
+
         <div className="effectsBoard">
           <NoiseSynth
             synth="snareDrum"
@@ -1061,6 +1013,29 @@ export default class Synth extends React.Component {
             changeEffectValue={changeEffectValue}
           />
         </div>
+
+        <div className="effectsBoard">
+          <PolySynth
+            synth="bassSynth"
+            instrument={bassSynth}
+            on={bassPart1.on}
+            togglePlay={() => togglePart('bassPart1')}
+            changeSynthValue={changeSynthValue}
+          />
+          <Freeverb
+            {...bassFreeverb}
+            toggleEffect={() => toggleEffect('bassFreeverb')}
+            changeEffectWetValue={changeEffectWetValue}
+            changeEffectValue={changeEffectValue}
+          />
+          <Phaser
+            {...bassPhaser}
+            toggleEffect={() => toggleEffect('bassPhaser')}
+            changeEffectWetValue={changeEffectWetValue}
+            changeEffectValue={changeEffectValue}
+          />
+        </div>
+
         <div className="effectsBoard">
           <div className="PresetButton" onClick={() => loadPreset(1)}>
             Load 1
@@ -1074,6 +1049,8 @@ export default class Synth extends React.Component {
           <div className="PresetButton" onClick={() => savePreset(2)}>
             Save 2
           </div>
+
+          <div onClick={() => togglePart('ambientPart1')}>Play Part 1</div>
 
           <ToneSynth
             synth="ambientSynth"
@@ -1129,7 +1106,7 @@ export default class Synth extends React.Component {
         <div className="effectsBoard">
           <PolySynth
             synth="leadSynth"
-            instrument={ambientSynth}
+            instrument={leadSynth}
             on={part1.on}
             togglePlay={() => togglePart('part1')}
             changeSynthValue={changeSynthValue}
