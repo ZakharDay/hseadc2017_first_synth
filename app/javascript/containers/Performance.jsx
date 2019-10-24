@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { merge } from 'lodash'
 import React from 'react'
 import Tone from 'tone'
 
@@ -12,6 +12,8 @@ import * as bassSynthTunes from '../tunes/p-bass-synth'
 import * as highSynthTunes from '../tunes/p-high-synth'
 import * as lightSynthTunes from '../tunes/p-light-synth'
 import * as soloSynthTunes from '../tunes/p-solo-synth'
+
+import Drum from '../components/synths/Drum'
 
 // import Chorus from '../components/effects/Chorus'
 // import Phaser from '../components/effects/Phaser'
@@ -34,41 +36,48 @@ snareHit.chain(snareEQ)
 // kickDrum.connect(kickAnalyser)
 // snareHit.connect(snareAnalyser)
 
-let drumLoop1Kick
-let drumLoop1Snare
-let drumLoop1Hat
+// let drumLoop1Kick
+// let drumLoop1Snare
+// let drumLoop1Hat
+
+let drumLoop1Kick = drumLoops.kick1(kickDrum)
+let drumLoop1Snare = drumLoops.snare1(snareHit, snareMembrane)
+let drumLoop1Hat = drumLoops.hat1(highhat)
+
+let drumLoop2Kick = drumLoops.kick2(kickDrum)
+let drumLoop2Snare = drumLoops.snare2(snareHit, snareMembrane)
+let drumLoop2Hat = drumLoops.hat2(highhat)
+
+let drumLoop3Kick = drumLoops.kick3(kickDrum)
+let drumLoop3Hat = drumLoops.hat3(highhat)
 
 // intro
 let lightSynth = lightSynthTunes.polySynth()
 let lightSynthFilter = lightSynthTunes.autoFilter()
-let jcReverb = lightSynthTunes.jcReverb()
-let chorus = lightSynthTunes.chorus().toMaster()
-let introPart = lightSynthTunes.introPart(lightSynth)
-lightSynth.chain(lightSynthFilter, jcReverb, chorus)
+let lightSynthReverb = lightSynthTunes.jcReverb()
+let lightSynthChorus = lightSynthTunes.chorus().toMaster()
+let lightSynthPart = lightSynthTunes.introPart(lightSynth)
+lightSynth.chain(lightSynthFilter, lightSynthReverb, lightSynthChorus)
 
 // bass
 let bassSynth = bassSynthTunes.bass()
-let distortion = bassSynthTunes.distortion().toMaster()
-let bassPart = bassSynthTunes.part(bassSynth)
+let bassSynthDistortion = bassSynthTunes.distortion().toMaster()
 let bassSynthFilter = bassSynthTunes.autoFilter()
-bassSynth.chain(bassSynthFilter, distortion)
+let bassSynthPart = bassSynthTunes.part(bassSynth)
+bassSynth.chain(bassSynthFilter, bassSynthDistortion)
 
 let soloSynth = soloSynthTunes.toneSynth() //.toMaster()
-let soloPart = soloSynthTunes.part(soloSynth)
 let soloSynthChorus = soloSynthTunes.chorus()
 let soloSynthReverb = soloSynthTunes.jcReverb() //.toMaster()
 let soloSynthFilter = soloSynthTunes.autoFilter().toMaster()
+let soloSynthPart = soloSynthTunes.part(soloSynth)
 soloSynth.chain(soloSynthChorus, soloSynthReverb, soloSynthFilter)
 
 let highSynth = highSynthTunes.metalSynth() //.toMaster()
-let highPart = highSynthTunes.part(highSynth)
-// let highSynthReverb = highSynthTunes.reverb() //.toMaster()
-let highSynthTremolo = highSynthTunes.tremolo() //.toMaster()
-let highSynthVibrato = highSynthTunes.vibrato() //.toMaster()
-// let stereoWidener = highSynthTunes.stereoWidener() //.toMaster()
-// let highSynthReverb = highSynthTunes.jcReverb().toMaster()
+let highSynthTremolo = highSynthTunes.tremolo()
+let highSynthVibrato = highSynthTunes.vibrato()
 let highSynthDistortion = highSynthTunes.distortion().toMaster()
-
+let highSynthPart = highSynthTunes.part(highSynth)
 highSynth.chain(highSynthTremolo, highSynthVibrato, highSynthDistortion)
 
 export default class Performance extends React.Component {
@@ -78,12 +87,41 @@ export default class Performance extends React.Component {
     this.kickCircle = React.createRef()
     this.snareCircle = React.createRef()
 
-    _.bindAll(this, 'handleKeydown', 'hitKickDrumCircle', 'hitSnareDrumCircle')
+    _.bindAll(
+      this,
+      'handleKeydown',
+      'setupDrums',
+      'toggleDrum',
+      'changeDrumLoop'
+    )
 
-    drumLoop1Kick = drumLoops.kick1(kickDrum, this.hitKickDrumCircle)
-    // prettier-ignore
-    drumLoop1Snare = drumLoops.snare1(snareHit, snareMembrane, this.hitSnareDrumCircle)
-    drumLoop1Hat = drumLoops.snare3(highhat)
+    // drumLoop1Kick = drumLoops.kick1(kickDrum, this.hitKickDrumCircle)
+    // // prettier-ignore
+    // drumLoop1Snare = drumLoops.snare1(snareHit, snareMembrane, this.hitSnareDrumCircle)
+    // drumLoop1Hat = drumLoops.snare3(highhat)
+
+    this.state = {
+      drums: {
+        kick: {
+          part: 0,
+          on: false,
+          volume: 10,
+          parts: [drumLoop1Kick, drumLoop2Kick, drumLoop3Kick]
+        },
+        snare: {
+          part: 0,
+          on: false,
+          volume: 10,
+          parts: [drumLoop1Snare, drumLoop2Snare]
+        },
+        hat: {
+          part: 0,
+          on: false,
+          volume: 10,
+          parts: [drumLoop1Hat, drumLoop2Hat, drumLoop3Hat]
+        }
+      }
+    }
   }
 
   componentDidMount() {
@@ -92,16 +130,6 @@ export default class Performance extends React.Component {
 
   nextMeasure() {
     console.log('next measure')
-  }
-
-  hitKickDrumCircle() {
-    // this.kickCircle.current.style.width = '100px'
-    // console.log('kick')
-    // console.log(kickAnalyser.getValue())
-  }
-
-  hitSnareDrumCircle() {
-    // console.log(snareAnalyser.getValue())
   }
 
   handleKeydown(e) {
@@ -128,51 +156,170 @@ export default class Performance extends React.Component {
         Tone.Transport.start()
         Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
 
-        // introPart.mute = true
-        bassPart.mute = true
-        drumLoop1Hat.mute = true
-        drumLoop1Kick.mute = true
-        drumLoop1Snare.mute = true
-        soloPart.mute = true
-        highPart.mute = true
+        this.state.drums.kick.parts.map(part => {
+          part.mute = true
+          part.start()
+        })
 
-        introPart.start()
-        bassPart.start()
-        drumLoop1Hat.start()
-        drumLoop1Kick.start()
-        drumLoop1Snare.start()
-        soloPart.start()
-        highPart.start()
+        this.state.drums.snare.parts.map(part => {
+          part.mute = true
+          part.start()
+        })
+
+        this.state.drums.hat.parts.map(part => {
+          part.mute = true
+          part.start()
+        })
+
+        bassSynthPart.mute = true
+        soloSynthPart.mute = true
+        highSynthPart.mute = true
+
+        lightSynthPart.start()
+        bassSynthPart.start()
+        soloSynthPart.start()
+        highSynthPart.start()
+
+        this.setupDrums('kick')
+        this.setupDrums('snare')
+        this.setupDrums('hat')
+
+        // this.state.drums.kick
+        //
+        // let { part, on, parts } = this.state.drums
+        //
+        // if (on == true) {
+        //   parts.map((p, i) => {
+        //     if (i == part) {
+        //       p.mute = false
+        //     } else {
+        //       p.mute = true
+        //     }
+        //
+        //     p.start()
+        //   })
+        // }
         break
       case 49:
-        introPart.mute = !introPart.mute
+        lightSynthPart.mute = !lightSynthPart.mute
         break
       case 50:
-        bassPart.mute = !bassPart.mute
+        bassSynthPart.mute = !bassSynthPart.mute
         break
       case 51:
-        drumLoop1Hat.mute = !drumLoop1Hat.mute
+        this.toggleDrum('kick')
         break
       case 52:
-        drumLoop1Kick.mute = !drumLoop1Kick.mute
+        this.toggleDrum('snare')
         break
       case 53:
-        drumLoop1Snare.mute = !drumLoop1Snare.mute
+        this.toggleDrum('hat')
         break
       case 54:
-        soloPart.mute = !soloPart.mute
+        soloSynthPart.mute = !soloSynthPart.mute
         break
       case 55:
-        highPart.mute = !highPart.mute
+        highSynthPart.mute = !highSynthPart.mute
         break
     }
+  }
+
+  setupDrums(drumName) {
+    let { part, on, parts } = this.state.drums[drumName]
+
+    if (on == true) {
+      parts.map((p, i) => {
+        if (i == part) {
+          p.mute = false
+        } else {
+          p.mute = true
+        }
+
+        p.start()
+      })
+    }
+  }
+
+  toggleDrum(drumName) {
+    let { drums } = this.state
+    let { part, on, volume, parts } = drums[drumName]
+
+    parts.map((p, i) => {
+      if (on == true) {
+        p.mute = true
+      } else {
+        p.mute = false
+      }
+    })
+
+    drums[drumName]['part'] = part
+    drums[drumName]['on'] = !on
+    drums[drumName]['volume'] = volume
+    drums[drumName]['parts'] = parts
+
+    merge({}, this.state.drums, drums)
+
+    this.setState({
+      drums
+    })
+  }
+
+  changeDrumLoop(drumName, partNumber) {
+    let { drums } = this.state
+    let { part, on, volume, parts } = drums[drumName]
+
+    parts.map((p, i) => {
+      console.log(i, partNumber)
+      if (i == partNumber) {
+        if (on == true) {
+          p.mute = false
+        }
+      } else {
+        p.mute = true
+      }
+    })
+
+    drums[drumName]['part'] = partNumber
+    drums[drumName]['on'] = on
+    drums[drumName]['volume'] = volume
+    drums[drumName]['parts'] = parts
+
+    merge({}, this.state.drums, drums)
+
+    this.setState({
+      drums
+    })
   }
 
   render() {
     return (
       <div>
-        <div className="kick" ref={this.kickCircle} />
-        <div className="snare" ref={this.snareCircle} />
+        <Drum
+          name="kick"
+          on={this.state.drums.kick.on}
+          part={this.state.drums.kick.part}
+          parts={this.state.drums.kick.parts}
+          toggleDrum={this.toggleDrum}
+          changeDrumLoop={this.changeDrumLoop}
+        />
+
+        <Drum
+          name="snare"
+          on={this.state.drums.snare.on}
+          part={this.state.drums.snare.part}
+          parts={this.state.drums.snare.parts}
+          toggleDrum={this.toggleDrum}
+          changeDrumLoop={this.changeDrumLoop}
+        />
+
+        <Drum
+          name="hat"
+          on={this.state.drums.hat.on}
+          part={this.state.drums.hat.part}
+          parts={this.state.drums.hat.parts}
+          toggleDrum={this.toggleDrum}
+          changeDrumLoop={this.changeDrumLoop}
+        />
       </div>
     )
   }

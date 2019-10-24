@@ -78,7 +78,7 @@ function bass() {
   b.envelope.decay = 0.8
   b.envelope.sustain = 0.75
   b.envelope.release = 1
-  b.volume.value = -1
+  b.volume.value = 2
 
   return b
 }
