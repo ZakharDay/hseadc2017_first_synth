@@ -113,6 +113,11 @@ export default class Performance extends React.Component {
         snareHit.triggerAttackRelease('16n')
         snareMembrane.triggerAttackRelease('E1', '16n')
         break
+      case 71:
+        console.log('g')
+        // highhat.triggerAttackRelease(51, '16n', 1)
+        highhat.triggerAttackRelease('16n')
+        break
       case 72:
         console.log('h')
         kickDrum.triggerAttackRelease('G0', '16n')
@@ -123,13 +128,42 @@ export default class Performance extends React.Component {
         Tone.Transport.start()
         Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
 
-        drumLoop1Kick.start()
-        drumLoop1Snare.start()
-        drumLoop1Hat.start()
+        // introPart.mute = true
+        bassPart.mute = true
+        drumLoop1Hat.mute = true
+        drumLoop1Kick.mute = true
+        drumLoop1Snare.mute = true
+        soloPart.mute = true
+        highPart.mute = true
+
         introPart.start()
         bassPart.start()
+        drumLoop1Hat.start()
+        drumLoop1Kick.start()
+        drumLoop1Snare.start()
         soloPart.start()
         highPart.start()
+        break
+      case 49:
+        introPart.mute = !introPart.mute
+        break
+      case 50:
+        bassPart.mute = !bassPart.mute
+        break
+      case 51:
+        drumLoop1Hat.mute = !drumLoop1Hat.mute
+        break
+      case 52:
+        drumLoop1Kick.mute = !drumLoop1Kick.mute
+        break
+      case 53:
+        drumLoop1Snare.mute = !drumLoop1Snare.mute
+        break
+      case 54:
+        soloPart.mute = !soloPart.mute
+        break
+      case 55:
+        highPart.mute = !highPart.mute
         break
     }
   }

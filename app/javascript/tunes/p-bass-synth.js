@@ -55,7 +55,7 @@ function part(synth) {
     function(time, note) {
       synth.triggerAttackRelease(note, '1n', time)
     },
-    ['F1', 'A1', 'C1', 'E1'],
+    ['F1', 'A1', 'C2', 'E1'],
     '1n'
   )
 
