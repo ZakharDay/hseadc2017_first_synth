@@ -1,7 +1,7 @@
 import Tone from 'tone'
 
 // prettier-ignore
-function kick1(kickDrum) {
+function kick2(kickDrum) {
   return new Tone.Sequence(
     function(time, note) {
       kickDrum.triggerAttackRelease(note, '16n', time)
@@ -21,7 +21,7 @@ function kick1(kickDrum) {
 }
 
 // prettier-ignore
-function kick2(kickDrum) {
+function kick1(kickDrum) {
   return new Tone.Sequence(
     function(time, note) {
       kickDrum.triggerAttackRelease(note, '16n', time)
@@ -77,7 +77,35 @@ function kick3(kickDrum) {
 }
 
 // prettier-ignore
-function snare1(snareHit, snareMembrane) {
+function kick4(kickDrum) {
+  return new Tone.Sequence(
+    function(time, note) {
+      kickDrum.triggerAttackRelease(note, '16n', time)
+    },
+    [
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+      'G0', 'G0', 'G0', null,
+      null, 'G0', null, 'G0',
+    ],
+    '16n'
+  )
+}
+
+// prettier-ignore
+function snare2(snareHit, snareMembrane) {
 // function snare1(snareHit, snareDrum, snareMembrane) {
   return new Tone.Sequence(
     function(time, note) {
@@ -105,7 +133,7 @@ function snare1(snareHit, snareMembrane) {
 }
 
 // prettier-ignore
-function snare2(snareHit, snareMembrane) {
+function snare1(snareHit, snareMembrane) {
   return new Tone.Sequence(
     function(time, note) {
       // // snareDrum.frequency.setValueAtTime(note, time)
@@ -187,4 +215,4 @@ function hat3(snareHit) {
   )
 }
 
-export { kick1, kick2, kick3, snare1, snare2, hat1, hat2, hat3 }
+export { kick1, kick2, kick3, kick4, snare1, snare2, hat1, hat2, hat3 }

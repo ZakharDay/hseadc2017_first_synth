@@ -13,12 +13,40 @@ import * as highSynthTunes from '../tunes/p-high-synth'
 import * as lightSynthTunes from '../tunes/p-light-synth'
 import * as soloSynthTunes from '../tunes/p-solo-synth'
 
+import Gain from '../components/utilities/Gain'
+
 import Drum from '../components/synths/Drum'
+
+import AutoFilter from '../components/effects/AutoFilter'
+import AutoPanner from '../components/effects/AutoPanner'
+import AutoWah from '../components/effects/AutoWah'
+import BitCrusher from '../components/effects/BitCrusher'
+import Chebyshev from '../components/effects/Chebyshev'
+import Chorus from '../components/effects/Chorus'
+import Distortion from '../components/effects/Distortion'
+import FeedbackDelay from '../components/effects/FeedbackDelay'
+import FeedbackEffect from '../components/effects/FeedbackEffect'
+import Freeverb from '../components/effects/Freeverb'
+import JcReverb from '../components/effects/JcReverb'
+import Phaser from '../components/effects/Phaser'
+import PingPongDelay from '../components/effects/PingPongDelay'
+import PitchShift from '../components/effects/PitchShift'
+import Reverb from '../components/effects/Reverb'
+import StereoWidener from '../components/effects/StereoWidener'
+import Tremolo from '../components/effects/Tremolo'
+import Vibrato from '../components/effects/Vibrato'
+
+import MembraneSynth from '../components/synths/MembraneSynth'
+import ToneSynth from '../components/synths/ToneSynth'
+import NoiseSynth from '../components/synths/NoiseSynth'
+import PolySynth from '../components/synths/PolySynth'
 
 // import Chorus from '../components/effects/Chorus'
 // import Phaser from '../components/effects/Phaser'
 
 let bpm = 90
+const defaultWetValue = 1
+
 let kickDrum = drums.kickDrum()
 let snareHit = drums.snareHit()
 let highhat = drums.highhat().toMaster()
@@ -51,13 +79,21 @@ let drumLoop2Hat = drumLoops.hat2(highhat)
 let drumLoop3Kick = drumLoops.kick3(kickDrum)
 let drumLoop3Hat = drumLoops.hat3(highhat)
 
+let drumLoop4Kick = drumLoops.kick4(kickDrum)
+
 // intro
 let lightSynth = lightSynthTunes.polySynth()
 let lightSynthFilter = lightSynthTunes.autoFilter()
 let lightSynthReverb = lightSynthTunes.jcReverb()
 let lightSynthChorus = lightSynthTunes.chorus().toMaster()
 let lightSynthPart = lightSynthTunes.introPart(lightSynth)
-lightSynth.chain(lightSynthFilter, lightSynthReverb, lightSynthChorus)
+let lightSynthGain = new Tone.Gain()
+lightSynth.chain(
+  lightSynthFilter,
+  lightSynthReverb,
+  lightSynthChorus,
+  lightSynthGain
+)
 
 // bass
 let bassSynth = bassSynthTunes.bass()
@@ -92,7 +128,12 @@ export default class Performance extends React.Component {
       'handleKeydown',
       'setupDrums',
       'toggleDrum',
-      'changeDrumLoop'
+      'changeDrumLoop',
+      'changeSynthValue',
+      'toggleEffect',
+      'changeEffectWetValue',
+      'changeEffectValue',
+      'changeGainValue'
     )
 
     // drumLoop1Kick = drumLoops.kick1(kickDrum, this.hitKickDrumCircle)
@@ -106,7 +147,7 @@ export default class Performance extends React.Component {
           part: 0,
           on: false,
           volume: 10,
-          parts: [drumLoop1Kick, drumLoop2Kick, drumLoop3Kick]
+          parts: [drumLoop1Kick, drumLoop2Kick, drumLoop3Kick, drumLoop4Kick]
         },
         snare: {
           part: 0,
@@ -120,7 +161,78 @@ export default class Performance extends React.Component {
           volume: 10,
           parts: [drumLoop1Hat, drumLoop2Hat, drumLoop3Hat]
         }
-      }
+      },
+      lightSynth,
+      bassSynth,
+      soloSynth,
+      highSynth,
+      bassSynthDistortion: {
+        name: 'bassSynthDistortion',
+        effect: bassSynthDistortion,
+        wet: bassSynthDistortion.wet.value,
+        on: true
+      },
+      bassSynthFilter: {
+        name: 'bassSynthFilter',
+        effect: bassSynthFilter,
+        wet: bassSynthFilter.wet.value,
+        on: true
+      },
+      lightSynthFilter: {
+        name: 'lightSynthFilter',
+        effect: lightSynthFilter,
+        wet: lightSynthFilter.wet.value,
+        on: true
+      },
+      lightSynthReverb: {
+        name: 'lightSynthReverb',
+        effect: lightSynthReverb,
+        wet: lightSynthReverb.wet.value,
+        on: true
+      },
+      lightSynthChorus: {
+        name: 'lightSynthChorus',
+        effect: lightSynthChorus,
+        wet: lightSynthChorus.wet.value,
+        on: true
+      },
+      soloSynthChorus: {
+        name: 'soloSynthChorus',
+        effect: soloSynthChorus,
+        wet: soloSynthChorus.wet.value,
+        on: true
+      },
+      soloSynthReverb: {
+        name: 'soloSynthReverb',
+        effect: soloSynthReverb,
+        wet: soloSynthReverb.wet.value,
+        on: true
+      },
+      soloSynthFilter: {
+        name: 'soloSynthFilter',
+        effect: soloSynthFilter,
+        wet: soloSynthFilter.wet.value,
+        on: true
+      },
+      highSynthTremolo: {
+        name: 'highSynthTremolo',
+        effect: highSynthTremolo,
+        wet: highSynthTremolo.wet.value,
+        on: true
+      },
+      highSynthVibrato: {
+        name: 'highSynthVibrato',
+        effect: highSynthVibrato,
+        wet: highSynthVibrato.wet.value,
+        on: true
+      },
+      highSynthDistortion: {
+        name: 'highSynthDistortion',
+        effect: highSynthDistortion,
+        wet: highSynthDistortion.wet.value,
+        on: true
+      },
+      lightSynthGain
     }
   }
 
@@ -248,7 +360,9 @@ export default class Performance extends React.Component {
       if (on == true) {
         p.mute = true
       } else {
-        p.mute = false
+        if (i == part) {
+          p.mute = false
+        }
       }
     })
 
@@ -291,6 +405,86 @@ export default class Performance extends React.Component {
     })
   }
 
+  changeSynthValue(synthName, effectName, value) {
+    let regexBefore = /(.*)\./
+    let regexAfter = /\.(.*)/
+    let synth = this.state[synthName]
+    let effectNameNamespace = effectName.match(regexBefore)[1]
+    let effectNameInNamespace = effectName.match(regexAfter)[1]
+    // let { envelope, oscillator } = synth.instrument
+    // let { envelope } = synth
+    // console.log('test', effectName, effectName.match(regexAfter))
+
+    if (synthName == 'bassSynth' || synthName == 'leadSynth') {
+      if (effectNameNamespace == 'oscillator') {
+        synth.voices[0].oscillator[effectNameInNamespace] = value
+      } else if (effectNameNamespace == 'envelope') {
+        synth.voices[0].envelope[effectNameInNamespace] = value
+      }
+    } else {
+      synth[effectName] = value
+    }
+
+    this.setState({
+      [`${synthName}`]: synth
+    })
+  }
+
+  toggleEffect(effectName) {
+    let { name, effect, wet, on } = this.state[effectName]
+
+    effect.wet.value = on == true ? 0 : wet
+
+    this.setState({
+      [`${effectName}`]: {
+        name,
+        effect,
+        wet,
+        on: !on
+      }
+    })
+  }
+
+  changeEffectWetValue(effectName, effectProperty, value) {
+    let { name, effect, wet, on } = this.state[effectName]
+
+    effect[effectProperty].value = on == true ? value : 0
+    wet = value
+
+    this.setState({
+      [`${effectName}`]: {
+        name,
+        effect,
+        wet,
+        on
+      }
+    })
+  }
+
+  changeEffectValue(effectName, effectProperty, value) {
+    let { name, effect, wet, on } = this.state[effectName]
+
+    if (effectProperty == 'order') {
+      value = Math.round(value)
+    }
+
+    effect[effectProperty] = value
+
+    this.setState({
+      [`${effectName}`]: {
+        name,
+        effect,
+        wet,
+        on
+      }
+    })
+  }
+
+  changeGainValue(synthName, effectName, value) {
+    let synth = this.state[synthName]
+    synth.gain.value = value
+  }
+
   render() {
     return (
       <div>
@@ -320,6 +514,112 @@ export default class Performance extends React.Component {
           toggleDrum={this.toggleDrum}
           changeDrumLoop={this.changeDrumLoop}
         />
+
+        <div className="effectsBoard">
+          <PolySynth
+            synth="lightSynth"
+            instrument={this.state.lightSynth}
+            on=""
+            togglePlay=""
+            changeSynthValue={this.changeSynthValue}
+          />
+          <AutoFilter
+            {...this.state.lightSynthFilter}
+            toggleEffect={() => toggleEffect('lightSynthFilter')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <JcReverb
+            {...this.state.lightSynthReverb}
+            toggleEffect={() => toggleEffect('lightSynthReverb')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Chorus
+            {...this.state.lightSynthChorus}
+            toggleEffect={() => toggleEffect('lightSynthChorus')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+        </div>
+
+        <div className="effectsBoard">
+          <ToneSynth
+            synth="bassSynth"
+            instrument={this.state.bassSynth}
+            on=""
+            togglePlay=""
+            changeSynthValue={this.changeSynthValue}
+          />
+          <Distortion
+            {...this.state.bassSynthDistortion}
+            toggleEffect={() => toggleEffect('bassSynthDistortion')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <AutoFilter
+            {...this.state.bassSynthFilter}
+            toggleEffect={() => toggleEffect('bassSynthFilter')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+        </div>
+
+        <div className="effectsBoard">
+          <ToneSynth
+            synth="soloSynth"
+            instrument={this.state.soloSynth}
+            on=""
+            togglePlay=""
+            changeSynthValue={this.changeSynthValue}
+          />
+          <Chorus
+            {...this.state.soloSynthChorus}
+            toggleEffect={() => toggleEffect('soloSynthChorus')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <JcReverb
+            {...this.state.soloSynthReverb}
+            toggleEffect={() => toggleEffect('soloSynthReverb')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <AutoFilter
+            {...this.state.soloSynthFilter}
+            toggleEffect={() => toggleEffect('soloSynthFilter')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+        </div>
+
+        <div className="effectsBoard">
+          <ToneSynth
+            synth="highSynth"
+            instrument={this.state.highSynth}
+            on=""
+            togglePlay=""
+            changeSynthValue={this.changeSynthValue}
+          />
+          <Tremolo
+            {...this.state.highSynthTremolo}
+            toggleEffect={() => toggleEffect('highSynthTremolo')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Vibrato
+            {...this.state.highSynthVibrato}
+            toggleEffect={() => toggleEffect('highSynthVibrato')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Distortion
+            {...this.state.highSynthDistortion}
+            toggleEffect={() => toggleEffect('highSynthDistortion')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+        </div>
       </div>
     )
   }

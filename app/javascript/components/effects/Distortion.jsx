@@ -49,7 +49,7 @@ export default class Distortion extends React.Component {
               name={name}
               property="distortion"
               min="0"
-              max="100"
+              max="20"
               on={on}
               value={effect.distortion}
               handleValueChange={changeEffectValue}
