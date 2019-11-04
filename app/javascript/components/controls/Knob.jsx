@@ -63,7 +63,7 @@ export default class Knob extends React.Component {
   }
 
   moveKnob(screenY) {
-    const { name, min, max, handleValueChange } = this.props
+    const { name, property, min, max, handleValueChange } = this.props
     const minimum = parseInt(min)
     const maximum = parseInt(max)
     const oldScreenY = this.state.screenY
@@ -79,7 +79,7 @@ export default class Knob extends React.Component {
       value = maximum
     }
 
-    handleValueChange(name, value)
+    handleValueChange(name, property, value)
 
     this.setState({
       screenY: screenY,

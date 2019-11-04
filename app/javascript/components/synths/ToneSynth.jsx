@@ -3,7 +3,7 @@ import React from 'react'
 import Tone from 'tone'
 
 import PlaySwitch from '../controls/PlaySwitch'
-import ToggleSwitch from '../controls/ToggleSwitch'
+import ToggleButton from '../controls/ToggleButton'
 import Slider from '../controls/Slider'
 import Knob from '../controls/Knob'
 import ButtonSet from '../controls/ButtonSet'
@@ -20,12 +20,12 @@ export default class ToneSynth extends React.Component {
   }
 
   render() {
-    const { synth, instrument, on, togglePlay } = this.props
+    const { text, synth, instrument, on, togglePlay } = this.props
     const { attack, decay, sustain, release } = instrument.envelope
 
     return (
-      <div className="Effect">
-        <ToggleSwitch value="Synth" current={on} handleClick={togglePlay} />
+      <div className="Synth">
+        <ToggleButton text={text} on={on} handleClick={togglePlay} />
 
         <div className="controlsContainer">
           <div className="controlsRow">

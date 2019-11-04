@@ -2,7 +2,7 @@ import _ from 'lodash'
 import React from 'react'
 import Tone from 'tone'
 
-import ToggleSwitch from '../controls/ToggleSwitch'
+import ToggleButton from '../controls/ToggleButton'
 import Slider from '../controls/Slider'
 
 // {
@@ -32,12 +32,12 @@ export default class ToneSynth extends React.Component {
   }
 
   render() {
-    const { synth, instrument, on, togglePlay } = this.props
+    const { text, synth, instrument, on, togglePlay } = this.props
     const { attack, decay, sustain, release } = instrument.envelope
 
     return (
-      <div className="Effect">
-        <ToggleSwitch value="Synth" current={on} handleClick={togglePlay} />
+      <div className="Synth">
+        <ToggleButton text={text} on={on} handleClick={togglePlay} />
 
         <div className="controlsContainer">
           <div className="controlsRow">

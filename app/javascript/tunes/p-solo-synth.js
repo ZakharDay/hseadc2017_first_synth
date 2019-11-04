@@ -1,5 +1,62 @@
 import Tone from 'tone'
 
+function toneSynth() {
+  return new Tone.Synth({
+    oscillator: {
+      type: 'sawtooth'
+    },
+    envelope: {
+      attack: 0.006,
+      decay: 0.1,
+      sustain: 0.006,
+      release: 0.006
+    }
+  })
+}
+
+function autoFilter() {
+  let f = new Tone.AutoFilter({
+    frequency: 6,
+    type: 'sawtooth',
+    depth: 0.7,
+    baseFrequency: 200,
+    octaves: 4,
+    filter: {
+      type: 'lowpass',
+      rolloff: -12,
+      Q: 0.3
+    }
+  })
+
+  f.wet.value = 0.6
+
+  return f
+}
+
+function chorus() {
+  let f = new Tone.Chorus({
+    frequency: 1,
+    delayTime: 2,
+    depth: 1,
+    type: 'triangle',
+    spread: 360
+  })
+
+  f.wet.value = 0.3
+
+  return f
+}
+
+function jcReverb() {
+  let f = new Tone.JCReverb({
+    roomSize: 0.84
+  })
+
+  f.wet.value = 0.3
+
+  return f
+}
+
 function part(synth) {
   const v = 0.4
 
@@ -110,63 +167,6 @@ function part(synth) {
   part.loopEnd = '4m'
 
   return part
-}
-
-function toneSynth() {
-  return new Tone.Synth({
-    oscillator: {
-      type: 'sawtooth'
-    },
-    envelope: {
-      attack: 0.006,
-      decay: 0.1,
-      sustain: 0.006,
-      release: 0.006
-    }
-  })
-}
-
-function autoFilter() {
-  let f = new Tone.AutoFilter({
-    frequency: 6,
-    type: 'sawtooth',
-    depth: 0.7,
-    baseFrequency: 200,
-    octaves: 4,
-    filter: {
-      type: 'lowpass',
-      rolloff: -12,
-      Q: 0.3
-    }
-  })
-
-  f.wet.value = 0.6
-
-  return f
-}
-
-function chorus() {
-  let f = new Tone.Chorus({
-    frequency: 1,
-    delayTime: 2,
-    depth: 1,
-    type: 'triangle',
-    spread: 360
-  })
-
-  f.wet.value = 0.3
-
-  return f
-}
-
-function jcReverb() {
-  let f = new Tone.JCReverb({
-    roomSize: 0.84
-  })
-
-  f.wet.value = 0.3
-
-  return f
 }
 
 export { part, toneSynth, autoFilter, chorus, jcReverb }

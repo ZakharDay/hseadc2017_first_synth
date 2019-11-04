@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import React from 'react'
 
 import PlaySwitch from '../controls/PlaySwitch'
-import ToggleSwitch from '../controls/ToggleSwitch'
+import ToggleButton from '../controls/ToggleButton'
 import Slider from '../controls/Slider'
 import Knob from '../controls/Knob'
 import ButtonSet from '../controls/ButtonSet'

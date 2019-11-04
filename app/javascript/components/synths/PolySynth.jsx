@@ -3,7 +3,7 @@ import React from 'react'
 import Tone from 'tone'
 
 import PlaySwitch from '../controls/PlaySwitch'
-import ToggleSwitch from '../controls/ToggleSwitch'
+import ToggleButton from '../controls/ToggleButton'
 import Slider from '../controls/Slider'
 import Knob from '../controls/Knob'
 import ButtonSet from '../controls/ButtonSet'
@@ -23,7 +23,7 @@ export default class PolySynth extends React.Component {
     const typeSet = ['sine', 'square', 'triangle', 'sawtooth', 'fatsawtooth']
     // prettier-ignore
     const curveSet = ['linear', 'exponential', 'sine', 'cosine', 'bounce', 'ripple', 'step']
-    const { synth, instrument, on, togglePlay } = this.props
+    const { text, synth, instrument, on, togglePlay } = this.props
     console.log(synth, instrument)
 
     const {
@@ -45,8 +45,8 @@ export default class PolySynth extends React.Component {
     } = instrument.voices[0].envelope
 
     return (
-      <div className="Effect">
-        <ToggleSwitch value="Synth" current={on} handleClick={togglePlay} />
+      <div className="Synth">
+        <ToggleButton text={text} on={on} handleClick={togglePlay} />
 
         <div className="controlsContainer">
           <div className="controlsRow">
@@ -138,7 +138,7 @@ export default class PolySynth extends React.Component {
               name={synth}
               property="envelope.release"
               min="0"
-              max="1"
+              max="10"
               value={release}
               handleValueChange={this.handleValueChange}
             />

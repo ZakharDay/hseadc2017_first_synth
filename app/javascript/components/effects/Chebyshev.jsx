@@ -1,7 +1,7 @@
 import React from 'react'
 
 import PlaySwitch from '../controls/PlaySwitch'
-import ToggleSwitch from '../controls/ToggleSwitch'
+import ToggleButton from '../controls/ToggleButton'
 import Slider from '../controls/Slider'
 import Knob from '../controls/Knob'
 import ButtonSet from '../controls/ButtonSet'
@@ -26,11 +26,7 @@ export default class Chebyshev extends React.Component {
 
     return (
       <div className="Effect">
-        <ToggleSwitch
-          value="Chebyshev"
-          current={on}
-          handleClick={toggleEffect}
-        />
+        <ToggleButton text="Chebyshev" on={on} handleClick={toggleEffect} />
 
         <div className="controlsContainer">
           <div className="controlsRow">

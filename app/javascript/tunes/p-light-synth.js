@@ -1,5 +1,67 @@
 import Tone from 'tone'
 
+function polySynth() {
+  return new Tone.PolySynth(3, Tone.Synth, {
+    oscillator: {
+      type: 'fatsawtooth',
+      count: 3,
+      spread: 30,
+      phase: 3,
+      fadeIn: 0.3
+    },
+    envelope: {
+      attack: 0.3,
+      decay: 0.8,
+      sustain: 0.8,
+      release: 5,
+      attackCurve: 'exponential'
+    }
+  })
+}
+
+function autoFilter() {
+  let f = new Tone.AutoFilter({
+    frequency: 1,
+    type: 'sine',
+    depth: 1,
+    baseFrequency: 200,
+    octaves: 2.6,
+    filter: {
+      type: 'lowpass',
+      rolloff: -24,
+      Q: 1
+    }
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
+function chorus() {
+  let f = new Tone.Chorus({
+    frequency: 3,
+    delayTime: 1.5,
+    depth: 0.7,
+    type: 'sine',
+    spread: 360
+  })
+
+  f.wet.value = 0.3
+
+  return f
+}
+
+function jcReverb() {
+  let f = new Tone.JCReverb({
+    roomSize: 0.5
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
 function introPart(synth) {
   const v = 0.2
 
@@ -96,68 +158,6 @@ function introPart(synth) {
   part.loopEnd = '4m'
 
   return part
-}
-
-function polySynth() {
-  return new Tone.PolySynth(3, Tone.Synth, {
-    oscillator: {
-      type: 'fatsawtooth',
-      count: 3,
-      spread: 30,
-      phase: 3,
-      fadeIn: 0.3
-    },
-    envelope: {
-      attack: 0.3,
-      decay: 0.8,
-      sustain: 0.8,
-      release: 5,
-      attackCurve: 'exponential'
-    }
-  })
-}
-
-function autoFilter() {
-  let f = new Tone.AutoFilter({
-    frequency: 1,
-    type: 'sine',
-    depth: 1,
-    baseFrequency: 200,
-    octaves: 2.6,
-    filter: {
-      type: 'lowpass',
-      rolloff: -24,
-      Q: 1
-    }
-  })
-
-  // f.wet.value = 0
-
-  return f
-}
-
-function chorus() {
-  let f = new Tone.Chorus({
-    frequency: 3,
-    delayTime: 1.5,
-    depth: 0.7,
-    type: 'sine',
-    spread: 360
-  })
-
-  f.wet.value = 0.3
-
-  return f
-}
-
-function jcReverb() {
-  let f = new Tone.JCReverb({
-    roomSize: 0.5
-  })
-
-  // f.wet.value = 0
-
-  return f
 }
 
 export { introPart, polySynth, autoFilter, chorus, jcReverb }

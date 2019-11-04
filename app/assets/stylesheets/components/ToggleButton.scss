@@ -1,4 +1,4 @@
-.ToggleSwitch {
+.ToggleButton {
   display: inline-block;
   width: 100%;
   height: 40px;
@@ -26,5 +26,13 @@
   &.on {
     background: red;
     color: white;
+  }
+}
+
+.Synth {
+  & > .ToggleButton {
+    background: white;
+    color: black;
+    border-bottom: 2px solid black;
   }
 }

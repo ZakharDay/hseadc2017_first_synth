@@ -1,19 +1,21 @@
 import _, { merge } from 'lodash'
 import React from 'react'
 import Tone from 'tone'
+let unmuteAudio = require('unmute-ios-audio')
 
 import * as drums from '../tunes/drums'
 import * as drumLoops from '../tunes/drum-loops'
 import * as samples from '../tunes/samples'
 import * as synths from '../tunes/synths'
 import * as effects from '../tunes/effects'
+import * as utilities from '../tunes/utilities'
 
 import * as bassSynthTunes from '../tunes/p-bass-synth'
 import * as highSynthTunes from '../tunes/p-high-synth'
 import * as lightSynthTunes from '../tunes/p-light-synth'
 import * as soloSynthTunes from '../tunes/p-solo-synth'
 
-import Gain from '../components/utilities/Gain'
+import Channel from '../components/utilities/Channel'
 
 import Drum from '../components/synths/Drum'
 
@@ -46,6 +48,11 @@ import PolySynth from '../components/synths/PolySynth'
 
 let bpm = 90
 const defaultWetValue = 1
+
+let bassSynthChannel = utilities.channel(0)
+let lightSynthChannel = utilities.channel(-20)
+let soloSynthChannel = utilities.channel(-20)
+let highSynthChannel = utilities.channel(-20)
 
 let kickDrum = drums.kickDrum()
 let snareHit = drums.snareHit()
@@ -81,40 +88,52 @@ let drumLoop3Hat = drumLoops.hat3(highhat)
 
 let drumLoop4Kick = drumLoops.kick4(kickDrum)
 
-// intro
 let lightSynth = lightSynthTunes.polySynth()
 let lightSynthFilter = lightSynthTunes.autoFilter()
 let lightSynthReverb = lightSynthTunes.jcReverb()
-let lightSynthChorus = lightSynthTunes.chorus().toMaster()
+let lightSynthChorus = lightSynthTunes.chorus()
 let lightSynthPart = lightSynthTunes.introPart(lightSynth)
-let lightSynthGain = new Tone.Gain()
+
 lightSynth.chain(
   lightSynthFilter,
   lightSynthReverb,
   lightSynthChorus,
-  lightSynthGain
+  lightSynthChannel
 )
 
-// bass
 let bassSynth = bassSynthTunes.bass()
-let bassSynthDistortion = bassSynthTunes.distortion().toMaster()
 let bassSynthFilter = bassSynthTunes.autoFilter()
+let bassSynthDistortion = bassSynthTunes.distortion()
 let bassSynthPart = bassSynthTunes.part(bassSynth)
-bassSynth.chain(bassSynthFilter, bassSynthDistortion)
+bassSynth.chain(bassSynthFilter, bassSynthDistortion, bassSynthChannel)
 
-let soloSynth = soloSynthTunes.toneSynth() //.toMaster()
+let soloSynth = soloSynthTunes.toneSynth()
 let soloSynthChorus = soloSynthTunes.chorus()
-let soloSynthReverb = soloSynthTunes.jcReverb() //.toMaster()
-let soloSynthFilter = soloSynthTunes.autoFilter().toMaster()
+let soloSynthReverb = soloSynthTunes.jcReverb()
+let soloSynthFilter = soloSynthTunes.autoFilter()
 let soloSynthPart = soloSynthTunes.part(soloSynth)
-soloSynth.chain(soloSynthChorus, soloSynthReverb, soloSynthFilter)
 
-let highSynth = highSynthTunes.metalSynth() //.toMaster()
+soloSynth.chain(
+  soloSynthChorus,
+  soloSynthReverb,
+  soloSynthFilter,
+  soloSynthChannel
+)
+
+let highSynth = highSynthTunes.metalSynth()
 let highSynthTremolo = highSynthTunes.tremolo()
 let highSynthVibrato = highSynthTunes.vibrato()
-let highSynthDistortion = highSynthTunes.distortion().toMaster()
+let highSynthDistortion = highSynthTunes.distortion()
 let highSynthPart = highSynthTunes.part(highSynth)
-highSynth.chain(highSynthTremolo, highSynthVibrato, highSynthDistortion)
+
+highSynth.chain(
+  highSynthTremolo,
+  highSynthVibrato,
+  highSynthDistortion,
+  highSynthChannel
+)
+
+let keysOctave = 3
 
 export default class Performance extends React.Component {
   constructor(props) {
@@ -125,7 +144,9 @@ export default class Performance extends React.Component {
 
     _.bindAll(
       this,
+      'handleStart',
       'handleKeydown',
+      'handleKeyup',
       'setupDrums',
       'toggleDrum',
       'changeDrumLoop',
@@ -133,7 +154,9 @@ export default class Performance extends React.Component {
       'toggleEffect',
       'changeEffectWetValue',
       'changeEffectValue',
-      'changeGainValue'
+      'changeChannelValue',
+      'toggleChannelValue',
+      'toggleNote'
     )
 
     // drumLoop1Kick = drumLoops.kick1(kickDrum, this.hitKickDrumCircle)
@@ -178,6 +201,14 @@ export default class Performance extends React.Component {
         wet: bassSynthFilter.wet.value,
         on: true
       },
+      bassSynthChannel: {
+        name: 'bassSynthChannel',
+        channel: bassSynthChannel,
+        pan: bassSynthChannel.pan.value,
+        volume: bassSynthChannel.volume.value,
+        mute: false,
+        solo: false
+      },
       lightSynthFilter: {
         name: 'lightSynthFilter',
         effect: lightSynthFilter,
@@ -195,6 +226,14 @@ export default class Performance extends React.Component {
         effect: lightSynthChorus,
         wet: lightSynthChorus.wet.value,
         on: true
+      },
+      lightSynthChannel: {
+        name: 'lightSynthChannel',
+        channel: lightSynthChannel,
+        pan: lightSynthChannel.pan.value,
+        volume: lightSynthChannel.volume.value,
+        mute: false,
+        solo: false
       },
       soloSynthChorus: {
         name: 'soloSynthChorus',
@@ -214,6 +253,14 @@ export default class Performance extends React.Component {
         wet: soloSynthFilter.wet.value,
         on: true
       },
+      soloSynthChannel: {
+        name: 'soloSynthChannel',
+        channel: soloSynthChannel,
+        pan: soloSynthChannel.pan.value,
+        volume: soloSynthChannel.volume.value,
+        mute: false,
+        solo: false
+      },
       highSynthTremolo: {
         name: 'highSynthTremolo',
         effect: highSynthTremolo,
@@ -232,16 +279,59 @@ export default class Performance extends React.Component {
         wet: highSynthDistortion.wet.value,
         on: true
       },
-      lightSynthGain
+      highSynthChannel: {
+        name: 'highSynthChannel',
+        channel: highSynthChannel,
+        pan: highSynthChannel.pan.value,
+        volume: highSynthChannel.volume.value,
+        mute: false,
+        solo: false
+      }
     }
   }
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown)
+    document.addEventListener('keyup', this.handleKeyup)
   }
 
   nextMeasure() {
     console.log('next measure')
+  }
+
+  handleStart() {
+    unmuteAudio()
+    Tone.Transport.bpm.value = bpm
+    Tone.Transport.start()
+    Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
+
+    this.state.drums.kick.parts.map(part => {
+      part.mute = true
+      part.start()
+    })
+
+    this.state.drums.snare.parts.map(part => {
+      part.mute = true
+      part.start()
+    })
+
+    this.state.drums.hat.parts.map(part => {
+      part.mute = true
+      part.start()
+    })
+
+    bassSynthPart.mute = true
+    soloSynthPart.mute = true
+    highSynthPart.mute = true
+
+    lightSynthPart.start()
+    bassSynthPart.start()
+    soloSynthPart.start()
+    highSynthPart.start()
+
+    this.setupDrums('kick')
+    this.setupDrums('snare')
+    this.setupDrums('hat')
   }
 
   handleKeydown(e) {
@@ -264,37 +354,7 @@ export default class Performance extends React.Component {
         break
       case 32:
         console.log('space')
-        Tone.Transport.bpm.value = bpm
-        Tone.Transport.start()
-        Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
-
-        this.state.drums.kick.parts.map(part => {
-          part.mute = true
-          part.start()
-        })
-
-        this.state.drums.snare.parts.map(part => {
-          part.mute = true
-          part.start()
-        })
-
-        this.state.drums.hat.parts.map(part => {
-          part.mute = true
-          part.start()
-        })
-
-        bassSynthPart.mute = true
-        soloSynthPart.mute = true
-        highSynthPart.mute = true
-
-        lightSynthPart.start()
-        bassSynthPart.start()
-        soloSynthPart.start()
-        highSynthPart.start()
-
-        this.setupDrums('kick')
-        this.setupDrums('snare')
-        this.setupDrums('hat')
+        this.handleStart()
 
         // this.state.drums.kick
         //
@@ -327,13 +387,60 @@ export default class Performance extends React.Component {
       case 53:
         this.toggleDrum('hat')
         break
-      case 54:
+      case 81:
         soloSynthPart.mute = !soloSynthPart.mute
         break
-      case 55:
+      case 87:
         highSynthPart.mute = !highSynthPart.mute
         break
+      case 84:
+        this.toggleNote('C' + keysOctave)
+        break
+      case 54:
+        this.toggleNote('C#' + keysOctave)
+        break
+      case 89:
+        this.toggleNote('D' + keysOctave)
+        break
+      case 55:
+        this.toggleNote('D#' + keysOctave)
+        break
+      case 85:
+        this.toggleNote('E' + keysOctave)
+        break
+      // case 56:
+      // this.toggleNote('E3')
+      // break
+      case 73:
+        this.toggleNote('F' + keysOctave)
+        break
+      case 57:
+        this.toggleNote('F#' + keysOctave)
+        break
+      case 79:
+        this.toggleNote('G' + keysOctave)
+        break
+      case 48:
+        this.toggleNote('G#' + keysOctave)
+        break
+      case 80:
+        this.toggleNote('A' + keysOctave)
+        break
+      case 173:
+        this.toggleNote('A#' + keysOctave)
+        break
+      case 219:
+        this.toggleNote('B' + keysOctave)
+        break
+      // case 61:
+      case 221:
+        this.toggleNote('C' + (keysOctave + 1))
+        break
     }
+  }
+
+  handleKeyup() {
+    this.stopNote()
   }
 
   setupDrums(drumName) {
@@ -383,7 +490,6 @@ export default class Performance extends React.Component {
     let { part, on, volume, parts } = drums[drumName]
 
     parts.map((p, i) => {
-      console.log(i, partNumber)
       if (i == partNumber) {
         if (on == true) {
           p.mute = false
@@ -415,11 +521,17 @@ export default class Performance extends React.Component {
     // let { envelope } = synth
     // console.log('test', effectName, effectName.match(regexAfter))
 
-    if (synthName == 'bassSynth' || synthName == 'leadSynth') {
+    if (synthName == 'leadSynth') {
       if (effectNameNamespace == 'oscillator') {
         synth.voices[0].oscillator[effectNameInNamespace] = value
       } else if (effectNameNamespace == 'envelope') {
         synth.voices[0].envelope[effectNameInNamespace] = value
+      }
+    } else if (synthName == 'bassSynth') {
+      if (effectNameNamespace == 'oscillator') {
+        synth.oscillator[effectNameInNamespace] = value
+      } else if (effectNameNamespace == 'envelope') {
+        synth.envelope[effectNameInNamespace] = value
       }
     } else {
       synth[effectName] = value
@@ -480,43 +592,155 @@ export default class Performance extends React.Component {
     })
   }
 
-  changeGainValue(synthName, effectName, value) {
-    let synth = this.state[synthName]
-    synth.gain.value = value
+  changeChannelValue(channelName, valueName, value) {
+    console.log(channelName, valueName, value)
+    let { name, channel, pan, volume, mute, solo } = this.state[channelName]
+    let shouldComponentUpdate = false
+
+    channel[valueName].value = value
+
+    if (valueName == 'pan') {
+      if (pan != value) {
+        pan = value
+        shouldComponentUpdate = true
+      }
+    }
+
+    if (valueName == 'volume') {
+      if (volume != value) {
+        volume = value
+        shouldComponentUpdate = true
+      }
+    }
+
+    if (shouldComponentUpdate) {
+      this.setState({
+        [`${channelName}`]: {
+          name,
+          channel,
+          pan,
+          volume,
+          mute,
+          solo
+        }
+      })
+    }
+  }
+
+  toggleChannelValue(channelName, valueName) {
+    let { name, channel, pan, volume, mute, solo } = this.state[channelName]
+    channel[valueName] = !channel[valueName]
+
+    if (valueName == 'mute') {
+      mute = !mute
+    }
+
+    if (valueName == 'solo') {
+      solo = !solo
+    }
+
+    this.setState({
+      [`${channelName}`]: {
+        name,
+        channel,
+        pan,
+        volume,
+        mute,
+        solo
+      }
+    })
+  }
+
+  toggleNote(note) {
+    highSynth.triggerAttack(note, '16n')
+  }
+
+  stopNote() {
+    highSynth.triggerRelease()
   }
 
   render() {
     return (
       <div>
-        <Drum
-          name="kick"
-          on={this.state.drums.kick.on}
-          part={this.state.drums.kick.part}
-          parts={this.state.drums.kick.parts}
-          toggleDrum={this.toggleDrum}
-          changeDrumLoop={this.changeDrumLoop}
-        />
+        <div
+          className="StartButton"
+          onClick={() => this.handleStart()}
+          onTouchStart={() => this.handleStart()}
+        >
+          Start
+        </div>
 
-        <Drum
-          name="snare"
-          on={this.state.drums.snare.on}
-          part={this.state.drums.snare.part}
-          parts={this.state.drums.snare.parts}
-          toggleDrum={this.toggleDrum}
-          changeDrumLoop={this.changeDrumLoop}
-        />
+        <div className="drumRack">
+          <Drum
+            name="kick"
+            on={this.state.drums.kick.on}
+            part={this.state.drums.kick.part}
+            parts={this.state.drums.kick.parts}
+            toggleDrum={this.toggleDrum}
+            changeDrumLoop={this.changeDrumLoop}
+          />
 
-        <Drum
-          name="hat"
-          on={this.state.drums.hat.on}
-          part={this.state.drums.hat.part}
-          parts={this.state.drums.hat.parts}
-          toggleDrum={this.toggleDrum}
-          changeDrumLoop={this.changeDrumLoop}
-        />
+          <Drum
+            name="snare"
+            on={this.state.drums.snare.on}
+            part={this.state.drums.snare.part}
+            parts={this.state.drums.snare.parts}
+            toggleDrum={this.toggleDrum}
+            changeDrumLoop={this.changeDrumLoop}
+          />
+
+          <Drum
+            name="hat"
+            on={this.state.drums.hat.on}
+            part={this.state.drums.hat.part}
+            parts={this.state.drums.hat.parts}
+            toggleDrum={this.toggleDrum}
+            changeDrumLoop={this.changeDrumLoop}
+          />
+
+          <div className="Drum">
+            <div className="controlsContainer">
+              <div className="controlsRow">
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('C1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('D1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('E1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('F1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('G1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('A1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('B1')}
+                ></div>
+                <div
+                  className="changeDrumLoop"
+                  onClick={() => this.toggleNote('C2')}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="effectsBoard">
           <PolySynth
+            text="Light Synth"
             synth="lightSynth"
             instrument={this.state.lightSynth}
             on=""
@@ -525,26 +749,32 @@ export default class Performance extends React.Component {
           />
           <AutoFilter
             {...this.state.lightSynthFilter}
-            toggleEffect={() => toggleEffect('lightSynthFilter')}
+            toggleEffect={() => this.toggleEffect('lightSynthFilter')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <JcReverb
             {...this.state.lightSynthReverb}
-            toggleEffect={() => toggleEffect('lightSynthReverb')}
+            toggleEffect={() => this.toggleEffect('lightSynthReverb')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <Chorus
             {...this.state.lightSynthChorus}
-            toggleEffect={() => toggleEffect('lightSynthChorus')}
+            toggleEffect={() => this.toggleEffect('lightSynthChorus')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.lightSynthChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
           />
         </div>
 
         <div className="effectsBoard">
           <ToneSynth
+            text="Bass Synth"
             synth="bassSynth"
             instrument={this.state.bassSynth}
             on=""
@@ -553,20 +783,26 @@ export default class Performance extends React.Component {
           />
           <Distortion
             {...this.state.bassSynthDistortion}
-            toggleEffect={() => toggleEffect('bassSynthDistortion')}
+            toggleEffect={() => this.toggleEffect('bassSynthDistortion')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <AutoFilter
             {...this.state.bassSynthFilter}
-            toggleEffect={() => toggleEffect('bassSynthFilter')}
+            toggleEffect={() => this.toggleEffect('bassSynthFilter')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.bassSynthChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
           />
         </div>
 
         <div className="effectsBoard">
           <ToneSynth
+            text="Solo Synth"
             synth="soloSynth"
             instrument={this.state.soloSynth}
             on=""
@@ -575,26 +811,32 @@ export default class Performance extends React.Component {
           />
           <Chorus
             {...this.state.soloSynthChorus}
-            toggleEffect={() => toggleEffect('soloSynthChorus')}
+            toggleEffect={() => this.toggleEffect('soloSynthChorus')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <JcReverb
             {...this.state.soloSynthReverb}
-            toggleEffect={() => toggleEffect('soloSynthReverb')}
+            toggleEffect={() => this.toggleEffect('soloSynthReverb')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <AutoFilter
             {...this.state.soloSynthFilter}
-            toggleEffect={() => toggleEffect('soloSynthFilter')}
+            toggleEffect={() => this.toggleEffect('soloSynthFilter')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.soloSynthChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
           />
         </div>
 
         <div className="effectsBoard">
           <ToneSynth
+            text="High Synth"
             synth="highSynth"
             instrument={this.state.highSynth}
             on=""
@@ -603,21 +845,26 @@ export default class Performance extends React.Component {
           />
           <Tremolo
             {...this.state.highSynthTremolo}
-            toggleEffect={() => toggleEffect('highSynthTremolo')}
+            toggleEffect={() => this.toggleEffect('highSynthTremolo')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <Vibrato
             {...this.state.highSynthVibrato}
-            toggleEffect={() => toggleEffect('highSynthVibrato')}
+            toggleEffect={() => this.toggleEffect('highSynthVibrato')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
           <Distortion
             {...this.state.highSynthDistortion}
-            toggleEffect={() => toggleEffect('highSynthDistortion')}
+            toggleEffect={() => this.toggleEffect('highSynthDistortion')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.highSynthChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
           />
         </div>
       </div>

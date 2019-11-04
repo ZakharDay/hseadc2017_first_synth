@@ -1,5 +1,81 @@
 import Tone from 'tone'
 
+function metalSynth() {
+  return new Tone.Synth({
+    frequency: 200,
+    envelope: {
+      attack: 0.001,
+      decay: 0.2,
+      sustain: 0.4,
+      release: 0.2
+    },
+    harmonicity: 5.1,
+    modulationIndex: 32,
+    resonance: 4000,
+    octaves: 1.5
+  })
+}
+
+function tremolo() {
+  let f = new Tone.Tremolo({
+    frequency: 10,
+    type: 'sine',
+    depth: 0.5,
+    spread: 180
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
+function vibrato() {
+  let f = new Tone.Vibrato({
+    maxDelay: 0.005,
+    frequency: 5,
+    depth: 0.1,
+    type: 'sine'
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
+// StereoEffect ???
+// StereoFeedbackEffect ???
+
+function stereoWidener() {
+  let f = new Tone.StereoWidener({
+    width: 0.5
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
+function jcReverb() {
+  let f = new Tone.JCReverb({
+    roomSize: 0.05
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
+function distortion() {
+  let f = new Tone.Distortion({
+    distortion: 1,
+    oversample: '4x'
+  })
+
+  // f.wet.value = 0
+
+  return f
+}
+
 function part(synth) {
   const v = 1
 
@@ -305,83 +381,6 @@ function part(synth) {
   part.loopEnd = '4m'
 
   return part
-}
-
-function metalSynth() {
-  return new Tone.Synth({
-    frequency: 200,
-    envelope: {
-      attack: 0.001,
-      decay: 0.2,
-      sustain: 0.4,
-      release: 0.2
-    },
-    harmonicity: 5.1,
-    modulationIndex: 32,
-    resonance: 4000,
-    octaves: 1.5,
-    volume: 10
-  })
-}
-
-function tremolo() {
-  let f = new Tone.Tremolo({
-    frequency: 10,
-    type: 'sine',
-    depth: 0.5,
-    spread: 180
-  })
-
-  // f.wet.value = 0
-
-  return f
-}
-
-function vibrato() {
-  let f = new Tone.Vibrato({
-    maxDelay: 0.005,
-    frequency: 5,
-    depth: 0.1,
-    type: 'sine'
-  })
-
-  // f.wet.value = 0
-
-  return f
-}
-
-// StereoEffect ???
-// StereoFeedbackEffect ???
-
-function stereoWidener() {
-  let f = new Tone.StereoWidener({
-    width: 0.5
-  })
-
-  // f.wet.value = 0
-
-  return f
-}
-
-function jcReverb() {
-  let f = new Tone.JCReverb({
-    roomSize: 0.05
-  })
-
-  // f.wet.value = 0
-
-  return f
-}
-
-function distortion() {
-  let f = new Tone.Distortion({
-    distortion: 1,
-    oversample: '4x'
-  })
-
-  // f.wet.value = 0
-
-  return f
 }
 
 export {
