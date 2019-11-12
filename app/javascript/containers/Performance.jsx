@@ -50,9 +50,9 @@ let bpm = 90
 const defaultWetValue = 1
 
 let bassSynthChannel = utilities.channel(0)
-let lightSynthChannel = utilities.channel(-20)
-let soloSynthChannel = utilities.channel(-20)
-let highSynthChannel = utilities.channel(-20)
+let lightSynthChannel = utilities.channel(-4)
+let soloSynthChannel = utilities.channel(-4)
+let highSynthChannel = utilities.channel(-4)
 
 let kickDrum = drums.kickDrum()
 let snareHit = drums.snareHit()
@@ -144,6 +144,7 @@ export default class Performance extends React.Component {
 
     _.bindAll(
       this,
+      'nextMeasure',
       'handleStart',
       'handleKeydown',
       'handleKeyup',
@@ -295,15 +296,192 @@ export default class Performance extends React.Component {
     document.addEventListener('keyup', this.handleKeyup)
   }
 
-  nextMeasure() {
-    console.log('next measure')
+  nextMeasure(now) {
+    const { toggleDrum, changeDrumLoop } = this
+    const p = Tone.Transport.position
+    const regexBefore = /([\w]+)/
+    let measure = p.match(regexBefore)[1]
+
+    switch (measure) {
+      case '0':
+        // start light synth
+        lightSynthPart.mute = false
+        break
+
+      case '16':
+        // start bass synth
+        bassSynthPart.mute = false
+        break
+
+      case '20':
+        // start hat loop 1
+        toggleDrum('hat')
+        break
+
+      case '24':
+        // start kick and snare
+        toggleDrum('kick')
+        toggleDrum('snare')
+        break
+
+      case '32':
+        // start solo synth
+        soloSynthPart.mute = false
+        break
+
+      case '44':
+        // stop solo synth
+        soloSynthPart.mute = true
+        // start kick loop 2
+        changeDrumLoop('kick', 1)
+        // start snare loop 2
+        changeDrumLoop('snare', 1)
+        break
+
+      case '56':
+        // start solo synth
+        soloSynthPart.mute = false
+        // start kick loop 1
+        changeDrumLoop('kick', 0)
+        // start snare loop 1
+        changeDrumLoop('snare', 0)
+        break
+
+      case '72':
+        // stop solo synth
+        soloSynthPart.mute = true
+        // start high synth
+        highSynthPart.mute = false
+        // start kick loop 2
+        changeDrumLoop('kick', 1)
+        // start snare loop 2
+        changeDrumLoop('snare', 1)
+        // how to make sound tuning
+        // ???
+        break
+
+      case '88':
+        // start kick loop 3
+        changeDrumLoop('kick', 2)
+        // start hat loop 2
+        changeDrumLoop('hat', 1)
+        break
+
+      case '96':
+        // stop kick
+        toggleDrum('kick')
+        // stop snare
+        toggleDrum('snare')
+        break
+
+      case '98':
+        // stop hat
+        toggleDrum('hat')
+        break
+
+      case '100':
+        // start snare loop 2
+        changeDrumLoop('snare', 1)
+        toggleDrum('snare')
+        break
+
+      case '104':
+        // stop high synth
+        highSynthPart.mute = true
+        // start solo synth
+        soloSynthPart.mute = false
+        // start kick loop 4
+        changeDrumLoop('kick', 3)
+        toggleDrum('kick')
+        // start hat loop 3
+        changeDrumLoop('hat', 2)
+        toggleDrum('hat')
+        break
+
+      case '120':
+        // start high synth
+        highSynthPart.mute = false
+        // stop solo synth
+        soloSynthPart.mute = true
+        // stop kick
+        toggleDrum('kick')
+        // stop snare
+        toggleDrum('snare')
+        // stop hat
+        toggleDrum('hat')
+        break
+
+      case '128':
+        // stop light synth
+        lightSynthPart.mute = true
+        // stop high synth
+        highSynthPart.mute = true
+        // how to move sliders
+        // ???
+        break
+
+      case '144':
+        // start solo synth
+        soloSynthPart.mute = false
+        // start light synth
+        lightSynthPart.mute = false
+        break
+
+      case '148':
+        // start kick loop 4
+        changeDrumLoop('kick', 3)
+        toggleDrum('kick')
+        // start snare loop 2
+        changeDrumLoop('snare', 1)
+        toggleDrum('snare')
+        // start hat loop 3
+        changeDrumLoop('hat', 2)
+        toggleDrum('hat')
+        break
+
+      case '164':
+        // start high synth
+        highSynthPart.mute = false
+        // stop solo synth
+        soloSynthPart.mute = true
+        // stop light synth
+        lightSynthPart.mute = true
+        // stop bass synth
+        bassSynthPart.mute = true
+        // stop kick
+        toggleDrum('kick')
+        // stop snare
+        toggleDrum('snare')
+        // stop hat
+        toggleDrum('hat')
+        break
+
+      case '166':
+        // start light synth
+        lightSynthPart.mute = false
+        break
+
+      case '168':
+        // stop high synth
+        highSynthPart.mute = true
+        // stop light synth
+        lightSynthPart.mute = true
+        // start hat loop 3
+        toggleDrum('hat')
+        break
+
+      case '169':
+        // stop hat
+        toggleDrum('hat')
+        break
+    }
   }
 
   handleStart() {
     unmuteAudio()
     Tone.Transport.bpm.value = bpm
-    Tone.Transport.start()
     Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
+    Tone.Transport.start()
 
     this.state.drums.kick.parts.map(part => {
       part.mute = true
@@ -320,6 +498,7 @@ export default class Performance extends React.Component {
       part.start()
     })
 
+    lightSynthPart.mute = true
     bassSynthPart.mute = true
     soloSynthPart.mute = true
     highSynthPart.mute = true
