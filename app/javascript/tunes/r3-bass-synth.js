@@ -8,16 +8,22 @@ function distortion() {
 }
 
 function bass() {
-  let b = new Tone.Synth()
-  b.oscillator.type = 'sawtooth'
-  b.oscillator.partials = [0.5, 0.5, 0.5]
-  b.oscillator.phase = 100
-  b.envelope.attack = 0.0
-  b.envelope.decay = 0.1
-  b.envelope.sustain = 0.9
-  b.envelope.release = 0.9
-
-  return b
+  return new Tone.PolySynth(3, Tone.Synth, {
+    oscillator: {
+      type: 'fatsawtooth',
+      count: 3,
+      spread: 30,
+      phase: 3,
+      fadeIn: 0.3
+    },
+    envelope: {
+      attack: 0.3,
+      decay: 0.8,
+      sustain: 0.8,
+      release: 5,
+      attackCurve: 'exponential'
+    }
+  })
 }
 
 function autoFilter() {

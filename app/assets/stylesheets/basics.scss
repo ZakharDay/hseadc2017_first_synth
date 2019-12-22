@@ -11,3 +11,11 @@
   user-select: none;
   box-sizing: border-box;
 }
+
+.space {
+  display: flex;
+
+  & > div {
+    width: 33.3333%;
+  }
+}
