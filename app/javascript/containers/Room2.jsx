@@ -13,6 +13,7 @@ import * as soloSynthTunes from '../tunes/r2-solo-synth'
 import * as highSynthTunes from '../tunes/r2-high-synth'
 import * as kickDrumTunes from '../tunes/r2-kick-drum'
 import * as hatDrumTunes from '../tunes/r2-hat-drum'
+import * as snareDrumTunes from '../tunes/r2-snare-drum'
 
 import AutoFilter from '../components/effects/AutoFilter'
 import AutoPanner from '../components/effects/AutoPanner'
@@ -40,34 +41,78 @@ import Channel from '../components/utilities/Channel'
 let bpm = 30
 const defaultWetValue = 1
 
+// ============
+// Channels
+// ============
+let kickDrumChannel = utilities.channel(0)
+let hatDrumChannel = utilities.channel(0)
+let snareDrumChannel = utilities.channel(0)
+
+let bassSynthChannel = utilities.channel(-29)
+let soloSynthChannel = utilities.channel(-17)
+let highSynthChannel = utilities.channel(0)
+
+// ============
+// Drums
+// ============
 let kickDrum = kickDrumTunes.kickDrum()
 let kickConvolver = new Tone.Convolver(samples.hall)
 let kickDistortion = kickDrumTunes.distortion()
 let kickVibrato = kickDrumTunes.vibrato()
-let kickDelay = kickDrumTunes.pingPongDelay().toMaster()
-kickDrum.chain(kickConvolver, kickDistortion, kickVibrato, kickDelay)
+let kickDelay = kickDrumTunes.pingPongDelay()
+kickDrum.chain(
+  kickConvolver,
+  kickDistortion,
+  kickVibrato,
+  kickDelay,
+  kickDrumChannel
+)
 
 let hatDrum = hatDrumTunes.hatDrum()
 let hatConvolver = new Tone.Convolver(samples.hall)
 let hatDrumFilter = hatDrumTunes.autoFilter()
 let hatDrumReverb = hatDrumTunes.freeverb()
-let hatDrumDelay = hatDrumTunes.feedbackDelay().toMaster()
-hatDrum.chain(hatConvolver, hatDrumFilter, hatDrumReverb, hatDrumDelay)
+let hatDrumDelay = hatDrumTunes.feedbackDelay()
+hatDrum.chain(
+  hatConvolver,
+  hatDrumFilter,
+  hatDrumReverb,
+  hatDrumDelay,
+  hatDrumChannel
+)
 
-let snareHit = drums.snareHit()
-let snareMembrane = drums.snareMembrane()
-let snareEQ = new Tone.EQ3(-10, 0, -10).toMaster()
-// let convolver = new Tone.Convolver(samples.hall).toMaster()
+let snareHit = snareDrumTunes.snareHit()
+let snareMembrane = snareDrumTunes.snareMembrane()
+let snareConvolver = new Tone.Convolver(samples.hall)
+let snareEQ = snareDrumTunes.snareEQ()
+let snareDrumVibrato = snareDrumTunes.vibrato()
+let snareDrumChebyshev = snareDrumTunes.chebyshev()
+let snareDrumChorus = snareDrumTunes.chorus()
+let snareDrumTremolo = snareDrumTunes.tremolo()
 
-// convolver.wet.value = 0.1
-// kickDrum.connect(convolver).toMaster()
-snareMembrane.chain(snareEQ)
-snareHit.chain(snareEQ)
+snareHit.chain(
+  snareEQ,
+  snareDrumTremolo,
+  snareDrumVibrato,
+  snareDrumChebyshev,
+  snareDrumChorus,
+  snareConvolver,
+  snareDrumChannel
+)
 
-let bassSynthChannel = utilities.channel(0)
-let soloSynthChannel = utilities.channel(-17)
-let highSynthChannel = utilities.channel(0)
+snareMembrane.chain(
+  snareEQ,
+  snareDrumTremolo,
+  snareDrumVibrato,
+  snareDrumChebyshev,
+  snareDrumChorus,
+  snareConvolver,
+  snareDrumChannel
+)
 
+// ============
+// Synths
+// ============
 let bassSynth = bassSynthTunes.bass()
 let bassSynthFilter = bassSynthTunes.autoFilter()
 let bassSynthReverb = bassSynthTunes.jcReverb()
@@ -276,6 +321,14 @@ export default class Room2 extends React.Component {
         wet: kickDelay.wet.value,
         on: true
       },
+      kickDrumChannel: {
+        name: 'kickDrumChannel',
+        channel: kickDrumChannel,
+        pan: kickDrumChannel.pan.value,
+        volume: kickDrumChannel.volume.value,
+        mute: false,
+        solo: false
+      },
       hatDrumFilter: {
         name: 'hatDrumFilter',
         effect: hatDrumFilter,
@@ -293,6 +346,46 @@ export default class Room2 extends React.Component {
         effect: hatDrumDelay,
         wet: hatDrumDelay.wet.value,
         on: true
+      },
+      hatDrumChannel: {
+        name: 'hatDrumChannel',
+        channel: hatDrumChannel,
+        pan: hatDrumChannel.pan.value,
+        volume: hatDrumChannel.volume.value,
+        mute: false,
+        solo: false
+      },
+      snareDrumChebyshev: {
+        name: 'snareDrumChebyshev',
+        effect: snareDrumChebyshev,
+        wet: snareDrumChebyshev.wet.value,
+        on: true
+      },
+      snareDrumChorus: {
+        name: 'snareDrumChorus',
+        effect: snareDrumChorus,
+        wet: snareDrumChorus.wet.value,
+        on: true
+      },
+      snareDrumTremolo: {
+        name: 'snareDrumTremolo',
+        effect: snareDrumTremolo,
+        wet: snareDrumTremolo.wet.value,
+        on: true
+      },
+      snareDrumVibrato: {
+        name: 'snareDrumVibrato',
+        effect: snareDrumVibrato,
+        wet: snareDrumVibrato.wet.value,
+        on: true
+      },
+      snareDrumChannel: {
+        name: 'snareDrumChannel',
+        channel: snareDrumChannel,
+        pan: snareDrumChannel.pan.value,
+        volume: snareDrumChannel.volume.value,
+        mute: false,
+        solo: false
       }
     }
   }
@@ -473,6 +566,7 @@ export default class Room2 extends React.Component {
         console.log('f')
         snareHit.triggerAttackRelease('16n')
         snareMembrane.triggerAttackRelease('E1', '16n')
+        // snareDrum.triggerAttackRelease('16n')
         break
       case 71:
         console.log('g')
@@ -798,6 +892,11 @@ export default class Room2 extends React.Component {
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
           />
+          <Channel
+            {...this.state.kickDrumChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
+          />
         </div>
 
         <div>Hat</div>
@@ -820,6 +919,45 @@ export default class Room2 extends React.Component {
             toggleEffect={() => this.toggleEffect('hatDrumDelay')}
             changeEffectWetValue={this.changeEffectWetValue}
             changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.hatDrumChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
+          />
+        </div>
+
+        <div>Snare</div>
+
+        <div className="effectsBoard">
+          <Tremolo
+            {...this.state.snareDrumTremolo}
+            toggleEffect={() => this.toggleEffect('snareDrumTremolo')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Vibrato
+            {...this.state.snareDrumVibrato}
+            toggleEffect={() => this.toggleEffect('snareDrumVibrato')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Chebyshev
+            {...this.state.snareDrumChebyshev}
+            toggleEffect={() => this.toggleEffect('snareDrumChebyshev')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Chorus
+            {...this.state.snareDrumChorus}
+            toggleEffect={() => this.toggleEffect('snareDrumChorus')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.hatDrumChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
           />
         </div>
       </div>
