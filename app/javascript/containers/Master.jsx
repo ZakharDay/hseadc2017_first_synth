@@ -48,4 +48,4 @@ export default class Master extends React.Component {
   }
 }
 
-export { dest1, dest2 }
+// export { dest1, dest2 }
