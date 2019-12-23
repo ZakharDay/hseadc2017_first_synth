@@ -10,7 +10,7 @@ function distortion() {
 function bass() {
   return new Tone.PolySynth(3, Tone.Synth, {
     oscillator: {
-      type: 'fatsawtooth',
+      type: 'square',
       count: 3,
       spread: 30,
       phase: 3,
