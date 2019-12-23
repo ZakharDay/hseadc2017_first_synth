@@ -3,21 +3,36 @@ import Tone from 'tone'
 function synth() {
   return new Tone.PolySynth(3, Tone.Synth, {
     oscillator: {
-      type: 'fatsawtooth',
+      type: 'sine',
       count: 3,
       spread: 30,
       phase: 3,
       fadeIn: 0.3
     },
     envelope: {
-      attack: 0.3,
-      decay: 0.8,
-      sustain: 0.8,
-      release: 5,
-      attackCurve: 'exponential'
+      attack: 0.07,
+      decay: 0.09,
+      sustain: 0.09,
+      release: 0.9,
+      attackCurve: 'linear'
     }
   })
 }
+
+// function synth() {
+//   return new Tone.MetalSynth({
+//     frequency: 100,
+//     envelope: {
+//       attack: 0.001,
+//       decay: 0.5,
+//       release: 0.2
+//     },
+//     harmonicity: 3.1,
+//     modulationIndex: 32,
+//     resonance: 4000,
+//     octaves: 1.5
+//   })
+// }
 
 function distortion() {
   return new Tone.Distortion({
@@ -45,11 +60,41 @@ function autoFilter() {
   return f
 }
 
+function bitCrusher() {
+  return new Tone.BitCrusher({
+    bits: 4
+  })
+}
+
+function vibrato() {
+  return new Tone.Vibrato({
+    maxDelay: 0.005,
+    frequency: 5,
+    depth: 0.1,
+    type: 'sine'
+  })
+}
+
+function reverb() {
+  return new Tone.JCReverb({
+    roomSize: 0.5
+  })
+}
+
+function randomNote(octave) {
+  let note = octave[Math.floor(Math.random() * octave.length)]
+
+  return note
+}
+
 function part(synth) {
+  // let octave = ['C5', 'D5', 'D#5', 'F5', 'G5', 'G#5', 'B5']
+  let octave = ['D6']
+
   const part = new Tone.Part(
     function(time, note) {
       synth.triggerAttackRelease(
-        note.noteName,
+        randomNote(octave),
         note.duration,
         time,
         note.velocity
@@ -58,29 +103,41 @@ function part(synth) {
     [
       {
         time: '0:0:0',
-        noteName: 'C4',
-        velocity: 0.4,
-        duration: '2m'
+        noteName: 'C6',
+        velocity: 0.5,
+        duration: '16t'
       },
       {
-        time: '1:0:0',
-        noteName: 'G4',
-        velocity: 0.6,
-        duration: '2m'
+        time: '0:0:1',
+        noteName: 'G6',
+        velocity: 0.5,
+        duration: '16t'
       },
       {
-        time: '2:0:0',
-        noteName: 'B4',
-        velocity: 0.4,
-        duration: '2m'
+        time: '0:0:2',
+        noteName: 'B6',
+        velocity: 0.5,
+        duration: '16t'
+      },
+      {
+        time: '0:0:3',
+        noteName: 'B6',
+        velocity: 0.5,
+        duration: '16t'
       }
     ]
   )
 
+  // const part = new Tone.Sequence(
+  //   function(time, note) {},
+  //   ['C6', 'E4', 'G4', 'A4'],
+  //   '4n'
+  // )
+
   part.loop = true
-  part.loopEnd = '3m'
+  part.loopEnd = '4n'
 
   return part
 }
 
-export { synth, distortion, part, autoFilter }
+export { synth, distortion, bitCrusher, part, autoFilter, vibrato, reverb }
