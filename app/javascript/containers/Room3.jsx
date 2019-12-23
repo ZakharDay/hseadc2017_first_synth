@@ -42,34 +42,34 @@ const defaultWetValue = 1
 // audio.src = URL.createObjectURL(dest.stream);
 // audio.play();
 
-// let bassSynthChannel = utilities.channel(-27)
+let bassSynthChannel = utilities.channel(-27)
 
 let bassSynth = bassSynthTunes.bass()
 let bassSynthFilter = bassSynthTunes.autoFilter()
 let bassSynthReverb = bassSynthTunes.jcReverb()
 let bassSynthPart = bassSynthTunes.part(bassSynth)
 
-let bassSynthChannel = new Tone.Channel({
-  pan: 0,
-  volume: 10,
-  mute: false,
-  solo: false
-})
+// let bassSynthChannel = new Tone.Channel({
+//   pan: 0,
+//   volume: 10,
+//   mute: false,
+//   solo: false
+// })
 
 // Tone.connect(bassSynthChannel, dest1)
 bassSynth.chain(bassSynthFilter, bassSynthReverb, bassSynthChannel)
 
 // let context = new Tone.Context()
 // let source = context.createMediaStreamSource(bassSynth)
-let destination = bassSynth.context.createMediaStreamDestination()
-bassSynthChannel.connect(destination)
+// let destination = bassSynth.context.createMediaStreamDestination()
+// bassSynthChannel.connect(destination)
 // source.setSinkId(3)
 
-var audio = new Audio()
+// var audio = new Audio()
 // audio.src = window.URL.createObjectURL(destination.stream)
-audio.srcObject = destination.stream
-audio.play()
-console.log(MediaDevices)
+// audio.srcObject = destination.stream
+// audio.play()
+// console.log(MediaDevices)
 // audio.setSinkId()
 
 // document.querySelector('audio').src = URL.createObjectURL(bassSynthChannel)
