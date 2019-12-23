@@ -22,8 +22,6 @@ export default class Channel extends React.Component {
       toggleChannelValue
     } = this.props
 
-    console.log(volume)
-
     return (
       <div className="Effect">
         <ToggleButton

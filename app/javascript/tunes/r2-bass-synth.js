@@ -55,304 +55,9 @@ function jcReverb() {
   return f
 }
 
-// function part(synth) {
-//   const v = 0.4
-//   const d = '4m'
-//
-//   const part = new Tone.Part(
-//     function(time, note) {
-//       synth.triggerAttackRelease(
-//         note.noteName,
-//         note.duration,
-//         time,
-//         note.velocity
-//       )
-//     },
-//     [
-//       // G
-//       {
-//         time: '0:0:0',
-//         noteName: 'G0',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'G1',
-//         velocity: 0.6,
-//         duration: d
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'G2',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       // F
-//       {
-//         time: '3:0:0',
-//         noteName: 'E0',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       {
-//         time: '3:0:0',
-//         noteName: 'E1',
-//         velocity: 0.6,
-//         duration: d
-//       },
-//       {
-//         time: '3:0:0',
-//         noteName: 'E2',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       // E
-//       {
-//         time: '7:0:0',
-//         noteName: 'C0',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       {
-//         time: '7:0:0',
-//         noteName: 'C1',
-//         velocity: 0.6,
-//         duration: d
-//       },
-//       {
-//         time: '7:0:0',
-//         noteName: 'C2',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       // D
-//       {
-//         time: '11:0:0',
-//         noteName: 'A0',
-//         velocity: 0.2,
-//         duration: d
-//       },
-//       {
-//         time: '11:0:0',
-//         noteName: 'A1',
-//         velocity: 0.6,
-//         duration: d
-//       },
-//       {
-//         time: '11:0:0',
-//         noteName: 'A2',
-//         velocity: 0.2,
-//         duration: d
-//       }
-//     ]
-//   )
-//
-//   part.loop = true
-//   part.loopEnd = '15m'
-//
-//   return part
-// }
-
-// function part(synth) {
-//   const v = 0.4
-//
-//   const part = new Tone.Part(
-//     function(time, note) {
-//       synth.triggerAttackRelease(
-//         note.noteName,
-//         note.duration,
-//         time,
-//         note.velocity
-//       )
-//     },
-//     [
-//       // G
-//       {
-//         time: '0:0:0',
-//         noteName: 'G0',
-//         velocity: 0.4,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'G1',
-//         velocity: 0.6,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'G2',
-//         velocity: 0.1,
-//         duration: '4n'
-//       },
-//       // F
-//       {
-//         time: '0:1:0',
-//         noteName: 'E0',
-//         velocity: 0.3,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:1:0',
-//         noteName: 'E1',
-//         velocity: 0.6,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:1:0',
-//         noteName: 'E2',
-//         velocity: 0.2,
-//         duration: '4n'
-//       },
-//       // E
-//       {
-//         time: '0:2:0',
-//         noteName: 'C0',
-//         velocity: 0.2,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:2:0',
-//         noteName: 'C1',
-//         velocity: 0.6,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:2:0',
-//         noteName: 'C2',
-//         velocity: 0.3,
-//         duration: '4n'
-//       },
-//       // D
-//       {
-//         time: '0:3:0',
-//         noteName: 'A0',
-//         velocity: 0.1,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:3:0',
-//         noteName: 'A1',
-//         velocity: 0.6,
-//         duration: '4n'
-//       },
-//       {
-//         time: '0:3:0',
-//         noteName: 'A2',
-//         velocity: 0.4,
-//         duration: '4n'
-//       }
-//     ]
-//   )
-//
-//   part.loop = true
-//   part.loopEnd = '1m'
-//
-//   return part
-// }
-
-// function part(synth) {
-//   const v = 0.4
-//
-//   const part = new Tone.Part(
-//     function(time, note) {
-//       synth.triggerAttackRelease(
-//         note.noteName,
-//         note.duration,
-//         time,
-//         note.velocity
-//       )
-//     },
-//     [
-//       // F: F A C
-//       {
-//         time: '0:0:0',
-//         noteName: 'F2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'A2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '0:0:0',
-//         noteName: 'C2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       // Am: A C E
-//       {
-//         time: '1:0:0',
-//         noteName: 'A2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '1:0:0',
-//         noteName: 'C3',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '1:0:0',
-//         noteName: 'E2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       // C: C E G
-//       {
-//         time: '2:0:0',
-//         noteName: 'C2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '2:0:0',
-//         noteName: 'E2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '2:0:0',
-//         noteName: 'G2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       // Em: E G B
-//       {
-//         time: '3:0:0',
-//         noteName: 'E2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '3:0:0',
-//         noteName: 'G2',
-//         velocity: v,
-//         duration: '1n'
-//       },
-//       {
-//         time: '3:0:0',
-//         noteName: 'B2',
-//         velocity: v,
-//         duration: '1n'
-//       }
-//     ]
-//   )
-//
-//   part.loop = true
-//   part.loopEnd = '4m'
-//
-//   return part
-// }
-
 function part(synth) {
   const v = 0.4
-  const d = '4m'
+  const d = '4n'
 
   const part = new Tone.Part(
     function(time, note) {
@@ -367,76 +72,76 @@ function part(synth) {
       // F: F A C
       {
         time: '0:0:0',
-        noteName: 'F2',
+        noteName: 'F1',
         velocity: v,
         duration: d
       },
       {
         time: '0:0:0',
-        noteName: 'A2',
+        noteName: 'A1',
         velocity: v,
         duration: d
       },
       {
         time: '0:0:0',
-        noteName: 'C2',
+        noteName: 'C1',
         velocity: v,
         duration: d
       },
       // Am: A C E
       {
-        time: '3:0:0',
-        noteName: 'A2',
+        time: '0:1:0',
+        noteName: 'A1',
         velocity: v,
         duration: d
       },
       {
-        time: '3:0:0',
-        noteName: 'C3',
-        velocity: v,
-        duration: d
-      },
-      {
-        time: '3:0:0',
-        noteName: 'E2',
-        velocity: v,
-        duration: d
-      },
-      // C: C E G
-      {
-        time: '7:0:0',
+        time: '0:1:0',
         noteName: 'C2',
         velocity: v,
         duration: d
       },
       {
-        time: '7:0:0',
-        noteName: 'E2',
+        time: '0:1:0',
+        noteName: 'E1',
+        velocity: v,
+        duration: d
+      },
+      // C: C E G
+      {
+        time: '0:2:0',
+        noteName: 'C1',
         velocity: v,
         duration: d
       },
       {
-        time: '7:0:0',
-        noteName: 'G2',
+        time: '0:2:0',
+        noteName: 'E1',
+        velocity: v,
+        duration: d
+      },
+      {
+        time: '0:2:0',
+        noteName: 'G1',
         velocity: v,
         duration: d
       },
       // Em: E G B
       {
-        time: '11:0:0',
-        noteName: 'E2',
+        time: '0:3:0',
+        noteName: 'E1',
         velocity: v,
         duration: d
       },
       {
-        time: '11:0:0',
-        noteName: 'G2',
+        time: '0:3:0',
+        noteName: 'G1',
         velocity: v,
         duration: d
       },
       {
-        time: '11:0:0',
-        noteName: 'B2',
+        time: '0:3:0',
+        noteName: 'B1',
         velocity: v,
         duration: d
       }
@@ -444,7 +149,7 @@ function part(synth) {
   )
 
   part.loop = true
-  part.loopEnd = '15m'
+  part.loopEnd = '1m'
 
   return part
 }

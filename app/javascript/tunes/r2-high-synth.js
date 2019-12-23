@@ -4,10 +4,10 @@ function metalSynth() {
   return new Tone.Synth({
     frequency: 200,
     envelope: {
-      attack: 0.001,
-      decay: 0.0657354797979798,
-      sustain: 0.20714962121212124,
-      release: 0.0657354797979798
+      attack: 0.15159406565656566,
+      decay: 0.3687657828282829,
+      sustain: 0.020280934343434344,
+      release: 0.2576546717171717
     },
     harmonicity: 5.1,
     modulationIndex: 32,
@@ -24,20 +24,20 @@ function tremolo() {
     spread: 180
   })
 
-  f.wet.value = 1
+  f.wet.value = 0
 
   return f
 }
 
 function vibrato() {
   let f = new Tone.Vibrato({
-    maxDelay: 0.005129419191919192,
+    maxDelay: 0.6111900252525253,
     frequency: 0.07891414141414141,
-    depth: 0.7576546717171718,
-    type: 'sawtooth'
+    depth: 0.3182607323232324,
+    type: 'triangle'
   })
 
-  f.wet.value = 1
+  f.wet.value = 0
 
   return f
 }
@@ -47,7 +47,7 @@ function vibrato() {
 
 function stereoWidener() {
   let f = new Tone.StereoWidener({
-    width: 0.5
+    width: 0.979876893939394
   })
 
   f.wet.value = 1
@@ -71,18 +71,18 @@ function distortion() {
     oversample: '4x'
   })
 
-  f.wet.value = 1
+  f.wet.value = 0
 
   return f
 }
 
 function pingPongDelay() {
   let f = new Tone.PingPongDelay({
-    delayTime: 0.5960385101010102,
-    maxDelayTime: 0.46472537878787884
+    delayTime: 0.5303819444444445,
+    maxDelayTime: 0.30815972222222227
   })
 
-  f.wet.value = 0.9
+  f.wet.value = 0.9950284090909092
 
   return f
 }

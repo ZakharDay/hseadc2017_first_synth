@@ -1,15 +1,14 @@
 import _, { merge } from 'lodash'
 import React from 'react'
 import Tone from 'tone'
-let unmuteAudio = require('unmute-ios-audio')
 
-import * as drums from '../tunes/drums'
+// import * as drums from '../tunes/drums'
+import * as drumLoops from '../tunes/r2-drum-loops'
 import * as samples from '../tunes/samples'
-import * as effects from '../tunes/effects'
+// import * as effects from '../tunes/effects'
 import * as utilities from '../tunes/utilities'
 
 import * as bassSynthTunes from '../tunes/r2-bass-synth'
-import * as soloSynthTunes from '../tunes/r2-solo-synth'
 import * as highSynthTunes from '../tunes/r2-high-synth'
 import * as kickDrumTunes from '../tunes/r2-kick-drum'
 import * as hatDrumTunes from '../tunes/r2-hat-drum'
@@ -38,19 +37,15 @@ import PolySynth from '../components/synths/PolySynth'
 import ToneSynth from '../components/synths/ToneSynth'
 import Channel from '../components/utilities/Channel'
 
-let bpm = 30
 const defaultWetValue = 1
 
 // ============
 // Channels
 // ============
-let kickDrumChannel = utilities.channel(0)
+let kickDrumChannel = utilities.channel(6)
 let hatDrumChannel = utilities.channel(0)
 let snareDrumChannel = utilities.channel(0)
-
-let bassSynthChannel = utilities.channel(-29)
-let soloSynthChannel = utilities.channel(-17)
-let highSynthChannel = utilities.channel(0)
+let highSynthChannel = utilities.channel(-7)
 
 // ============
 // Drums
@@ -110,36 +105,13 @@ snareMembrane.chain(
   snareDrumChannel
 )
 
+let drumLoopKick = drumLoops.kick(kickDrum)
+let drumLoopSnare = drumLoops.snare(snareHit, snareMembrane)
+let drumLoopHat = drumLoops.hat(hatDrum)
+
 // ============
 // Synths
 // ============
-let bassSynth = bassSynthTunes.bass()
-let bassSynthFilter = bassSynthTunes.autoFilter()
-let bassSynthReverb = bassSynthTunes.jcReverb()
-let bassSynthPart = bassSynthTunes.part(bassSynth)
-bassSynth.chain(bassSynthFilter, bassSynthReverb, bassSynthChannel)
-
-let soloSynth = soloSynthTunes.toneSynth()
-let soloSynthTremolo = soloSynthTunes.tremolo()
-let soloSynthVibrato = soloSynthTunes.vibrato()
-let soloSynthChorus = soloSynthTunes.chorus()
-let soloSynthReverb = soloSynthTunes.jcReverb()
-let soloSynthDelay = soloSynthTunes.pingPongDelay()
-let soloSynthFilter = soloSynthTunes.autoFilter()
-let soloSynthPart1 = soloSynthTunes.part1(soloSynth)
-let soloSynthPart2 = soloSynthTunes.part2(soloSynth)
-let soloSynthPart3 = soloSynthTunes.part3(soloSynth)
-
-soloSynth.chain(
-  soloSynthTremolo,
-  soloSynthVibrato,
-  soloSynthChorus,
-  soloSynthReverb,
-  soloSynthDelay,
-  soloSynthFilter,
-  soloSynthChannel
-)
-
 let highSynth = highSynthTunes.metalSynth()
 let highSynthTremolo = highSynthTunes.tremolo()
 let highSynthVibrato = highSynthTunes.vibrato()
@@ -163,7 +135,6 @@ export default class Room2 extends React.Component {
 
     _.bindAll(
       this,
-      'handleStart',
       'changeSynthValue',
       'toggleEffect',
       'changeEffectWetValue',
@@ -182,87 +153,21 @@ export default class Room2 extends React.Component {
         kick: {
           part: 0,
           on: false,
-          volume: 10
-          // parts: [drumLoop1Kick, drumLoop2Kick, drumLoop3Kick, drumLoop4Kick]
+          volume: 10,
+          parts: [drumLoopKick]
         },
         snare: {
           part: 0,
           on: false,
-          volume: 10
-          // parts: [drumLoop1Snare, drumLoop2Snare]
+          volume: 10,
+          parts: [drumLoopSnare]
         },
         hat: {
           part: 0,
           on: false,
-          volume: 10
-          // parts: [drumLoop1Hat, drumLoop2Hat, drumLoop3Hat]
+          volume: 10,
+          parts: [drumLoopHat]
         }
-      },
-      bassSynth,
-      bassSynthFilter: {
-        name: 'bassSynthFilter',
-        effect: bassSynthFilter,
-        wet: bassSynthFilter.wet.value,
-        on: true
-      },
-      bassSynthReverb: {
-        name: 'bassSynthReverb',
-        effect: bassSynthReverb,
-        wet: bassSynthReverb.wet.value,
-        on: true
-      },
-      bassSynthChannel: {
-        name: 'bassSynthChannel',
-        channel: bassSynthChannel,
-        pan: bassSynthChannel.pan.value,
-        volume: bassSynthChannel.volume.value,
-        mute: false,
-        solo: false
-      },
-      soloSynth,
-      soloSynthTremolo: {
-        name: 'soloSynthTremolo',
-        effect: soloSynthTremolo,
-        wet: soloSynthTremolo.wet.value,
-        on: true
-      },
-      soloSynthVibrato: {
-        name: 'soloSynthVibrato',
-        effect: soloSynthVibrato,
-        wet: soloSynthVibrato.wet.value,
-        on: true
-      },
-      soloSynthChorus: {
-        name: 'soloSynthChorus',
-        effect: soloSynthChorus,
-        wet: soloSynthChorus.wet.value,
-        on: true
-      },
-      soloSynthReverb: {
-        name: 'soloSynthReverb',
-        effect: soloSynthReverb,
-        wet: soloSynthReverb.wet.value,
-        on: true
-      },
-      soloSynthDelay: {
-        name: 'soloSynthDelay',
-        effect: soloSynthDelay,
-        wet: soloSynthDelay.wet.value,
-        on: true
-      },
-      soloSynthFilter: {
-        name: 'soloSynthFilter',
-        effect: soloSynthFilter,
-        wet: soloSynthFilter.wet.value,
-        on: true
-      },
-      soloSynthChannel: {
-        name: 'soloSynthChannel',
-        channel: soloSynthChannel,
-        pan: soloSynthChannel.pan.value,
-        volume: soloSynthChannel.volume.value,
-        mute: false,
-        solo: false
       },
       highSynth,
       highSynthTremolo: {
@@ -395,24 +300,12 @@ export default class Room2 extends React.Component {
     document.addEventListener('keyup', this.handleKeyup)
   }
 
-  handleStart() {
-    unmuteAudio()
-    Tone.Transport.bpm.value = bpm
-    Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
-    Tone.Transport.start()
-
-    bassSynthPart.start()
-  }
-
   changeSynthValue(synthName, effectName, value) {
     let regexBefore = /(.*)\./
     let regexAfter = /\.(.*)/
     let synth = this.state[synthName]
     let effectNameNamespace = effectName.match(regexBefore)[1]
     let effectNameInNamespace = effectName.match(regexAfter)[1]
-    // let { envelope, oscillator } = synth.instrument
-    // let { envelope } = synth
-    // console.log('test', effectName, effectName.match(regexAfter))
 
     if (synthName == 'bassSynth') {
       if (effectNameNamespace == 'oscillator') {
@@ -420,7 +313,6 @@ export default class Room2 extends React.Component {
         synth.voices[1].oscillator[effectNameInNamespace] = value
         synth.voices[2].oscillator[effectNameInNamespace] = value
       } else if (effectNameNamespace == 'envelope') {
-        console.log('YOYOYOY')
         synth.voices[0].envelope[effectNameInNamespace] = value
         synth.voices[1].envelope[effectNameInNamespace] = value
         synth.voices[2].envelope[effectNameInNamespace] = value
@@ -439,7 +331,6 @@ export default class Room2 extends React.Component {
   }
 
   changeChannelValue(channelName, valueName, value) {
-    console.log(channelName, valueName, value)
     let { name, channel, pan, volume, mute, solo } = this.state[channelName]
     let shouldComponentUpdate = false
 
@@ -702,128 +593,23 @@ export default class Room2 extends React.Component {
     })
   }
 
-  startSoloPart1() {
-    soloSynthPart1.start()
-    soloSynthPart2.stop()
-    soloSynthPart3.stop()
+  startRoom() {
+    highSynthPart1.start()
+    this.toggleDrum('kick')
+    this.toggleDrum('hat')
   }
 
-  startSoloPart2() {
-    soloSynthPart1.stop()
-    soloSynthPart2.start()
-    soloSynthPart3.stop()
-  }
-
-  startSoloPart3() {
-    soloSynthPart1.stop()
-    soloSynthPart2.stop()
-    soloSynthPart3.start()
-  }
-
-  stopSoloParts() {
-    soloSynthPart1.stop()
-    soloSynthPart2.stop()
-    soloSynthPart3.stop()
+  stopRoom() {
+    highSynthPart1.stop()
+    this.toggleDrum('kick')
+    this.toggleDrum('hat')
   }
 
   render() {
     return (
       <div>
-        <div
-          className="StartButton"
-          onClick={() => this.handleStart()}
-          onTouchStart={() => this.handleStart()}
-        >
-          Start
-        </div>
-
-        <div className="effectsBoard">
-          <PolySynth
-            text="Bass Synth"
-            synth="bassSynth"
-            instrument={this.state.bassSynth}
-            on=""
-            togglePlay=""
-            changeSynthValue={this.changeSynthValue}
-          />
-          <AutoFilter
-            {...this.state.bassSynthFilter}
-            toggleEffect={() => this.toggleEffect('bassSynthFilter')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <JcReverb
-            {...this.state.bassSynthReverb}
-            toggleEffect={() => this.toggleEffect('bassSynthReverb')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <Channel
-            {...this.state.bassSynthChannel}
-            changeChannelValue={this.changeChannelValue}
-            toggleChannelValue={this.toggleChannelValue}
-          />
-        </div>
-
-        <div onClick={() => this.startSoloPart1()}>Part 1</div>
-        <div onClick={() => this.startSoloPart2()}>Part 2</div>
-        <div onClick={() => this.startSoloPart3()}>Part 3</div>
-        <div onClick={() => this.stopSoloParts()}>Stop</div>
-
-        <div className="effectsBoard">
-          <ToneSynth
-            text="Solo Synth"
-            synth="soloSynth"
-            instrument={this.state.soloSynth}
-            on=""
-            togglePlay=""
-            changeSynthValue={this.changeSynthValue}
-          />
-          <Tremolo
-            {...this.state.soloSynthTremolo}
-            toggleEffect={() => this.toggleEffect('soloSynthTremolo')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <Vibrato
-            {...this.state.soloSynthVibrato}
-            toggleEffect={() => this.toggleEffect('soloSynthVibrato')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <Chorus
-            {...this.state.soloSynthChorus}
-            toggleEffect={() => this.toggleEffect('soloSynthChorus')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <JcReverb
-            {...this.state.soloSynthReverb}
-            toggleEffect={() => this.toggleEffect('soloSynthReverb')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <PingPongDelay
-            {...this.state.soloSynthDelay}
-            toggleEffect={() => this.toggleEffect('soloSynthDelay')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <AutoFilter
-            {...this.state.soloSynthFilter}
-            toggleEffect={() => this.toggleEffect('soloSynthFilter')}
-            changeEffectWetValue={this.changeEffectWetValue}
-            changeEffectValue={this.changeEffectValue}
-          />
-          <Channel
-            {...this.state.soloSynthChannel}
-            changeChannelValue={this.changeChannelValue}
-            toggleChannelValue={this.toggleChannelValue}
-          />
-        </div>
-
-        <div onClick={() => highSynthPart1.start()}>Start</div>
-        <div onClick={() => highSynthPart1.stop()}>Stop</div>
+        <div onClick={() => this.startRoom()}>Start</div>
+        <div onClick={() => this.stopRoom()}>Stop</div>
 
         <div className="effectsBoard">
           <ToneSynth
