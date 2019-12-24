@@ -7,6 +7,8 @@ import * as utilities from '../tunes/utilities'
 
 import * as synthTunes from '../tunes/r3-synth'
 import * as noiseTunes from '../tunes/r3-noiseSynth'
+import * as samplerTunes from '../tunes/r3-sampler'
+import * as synth2Tunes from '../tunes/r3-synth2'
 
 import AutoFilter from '../components/effects/AutoFilter'
 import Distortion from '../components/effects/Distortion'
@@ -22,8 +24,10 @@ import Channel from '../components/utilities/Channel'
 let bpm = 90
 const defaultWetValue = 1
 
-let synthChannel = utilities.channel(0)
-let noiseChannel = utilities.channel(0)
+let synthChannel = utilities.channel(-34)
+let noiseChannel = utilities.channel(-20)
+let samplerChannel = utilities.channel(0)
+let synth2Channel = utilities.channel(-8)
 
 let synth = synthTunes.synth()
 let synthDistortion = synthTunes.distortion()
@@ -42,8 +46,26 @@ synth.chain(
 )
 
 let noise = noiseTunes.synth()
-// let noiseStart = noiseTunes.start()
 noise.chain(noiseChannel)
+
+let sampler = samplerTunes.sampler()
+let samplerReverb = samplerTunes.reverb()
+let samplerBitCrusher = samplerTunes.bitCrusher()
+let samplerDistortion = samplerTunes.distortion()
+let samplerPart = samplerTunes.part(sampler)
+sampler.chain(
+  samplerReverb,
+  samplerBitCrusher,
+  samplerDistortion,
+  samplerChannel
+)
+
+let synth2 = synth2Tunes.synth()
+let synth2Distortion = synth2Tunes.distortion()
+let synth2BitCrusher = synth2Tunes.bitCrusher()
+let synth2Reverb = synth2Tunes.reverb()
+let synth2Part = synth2Tunes.part(synth2)
+synth2.chain(synth2Distortion, synth2BitCrusher, synth2Reverb, synth2Channel)
 
 export default class Room3 extends React.Component {
   constructor(props) {
@@ -52,6 +74,9 @@ export default class Room3 extends React.Component {
     _.bindAll(
       this,
       'handleStart',
+      'handleStop',
+      'handleSamplerStart',
+      'handleNoiseStart',
       'changeSynthValue',
       'toggleEffect',
       'changeEffectWetValue',
@@ -112,6 +137,60 @@ export default class Room3 extends React.Component {
         volume: noiseChannel.volume.value,
         mute: false,
         solo: false
+      },
+      sampler,
+      samplerReverb: {
+        name: 'samplerReverb',
+        effect: samplerReverb,
+        wet: samplerReverb.wet.value,
+        on: true
+      },
+      samplerBitCrusher: {
+        name: 'samplerBitCrusher',
+        effect: samplerBitCrusher,
+        wet: samplerBitCrusher.wet.value,
+        on: true
+      },
+      samplerDistortion: {
+        name: 'samplerDistortion',
+        effect: samplerDistortion,
+        wet: samplerDistortion.wet.value,
+        on: true
+      },
+      samplerChannel: {
+        name: 'samplerChannel',
+        channel: samplerChannel,
+        pan: samplerChannel.pan.value,
+        volume: samplerChannel.volume.value,
+        mute: false,
+        solo: false
+      },
+      synth2,
+      synth2Distortion: {
+        name: 'synth2Distortion',
+        effect: synth2Distortion,
+        wet: synth2Distortion.wet.value,
+        on: true
+      },
+      synth2BitCrusher: {
+        name: 'synth2BitCrusher',
+        effect: synth2BitCrusher,
+        wet: synth2BitCrusher.wet.value,
+        on: true
+      },
+      synth2Reverb: {
+        name: 'synth2Reverb',
+        effect: synth2Reverb,
+        wet: synth2Reverb.wet.value,
+        on: true
+      },
+      synth2Channel: {
+        name: 'synth2Channel',
+        channel: synth2Channel,
+        pan: synth2Channel.pan.value,
+        volume: synth2Channel.volume.value,
+        mute: false,
+        solo: false
       }
     }
   }
@@ -121,7 +200,7 @@ export default class Room3 extends React.Component {
     document.addEventListener('keyup', this.handleKeyup)
   }
 
-  handleStart() {
+  handleStart(synth) {
     unmuteAudio()
     Tone.Transport.bpm.value = bpm
     Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
@@ -129,10 +208,75 @@ export default class Room3 extends React.Component {
 
     console.log('start')
 
-    synthPart.start()
-    // noisePart.start()
-    noiseTunes.start(noise)
+    switch (synth) {
+      case 'synth1':
+        synthPart.start()
+        break
+      case 'synth2':
+        synth2Part.start()
+        break
+      case 'noise':
+        noise.start()
+        break
+      case 'sampler':
+        samplerPart.start()
+        break
+      default:
+    }
   }
+
+  handleStop(synth) {
+    switch (synth) {
+      case 'synth1':
+        synthPart.stop()
+        break
+      case 'synth2':
+        synth2Part.stop()
+        break
+      case 'noise':
+        noise.stop()
+        break
+      case 'sampler':
+        samplerPart.stop()
+        break
+      default:
+    }
+  }
+
+  handleBassStart() {
+    unmuteAudio()
+    Tone.Transport.bpm.value = bpm
+    Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
+    Tone.Transport.start()
+
+    console.log('start')
+
+    synth2Part.start()
+  }
+
+  handleSamplerStart() {
+    unmuteAudio()
+    Tone.Transport.bpm.value = bpm
+    Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
+    Tone.Transport.start()
+
+    console.log('sampler start')
+
+    samplerPart.start()
+  }
+
+  handleNoiseStart() {
+    unmuteAudio()
+    Tone.Transport.bpm.value = bpm
+    Tone.Transport.scheduleRepeat(this.nextMeasure, '1m')
+    Tone.Transport.start()
+
+    console.log('noise start')
+
+    noise.start()
+  }
+
+  handle
 
   handleKeydown(e) {
     console.log(e.key, e.code, e.keyCode)
@@ -300,15 +444,21 @@ export default class Room3 extends React.Component {
   render() {
     return (
       <div>
-        <div
-          className="StartButton"
-          onClick={() => this.handleStart()}
-          onTouchStart={() => this.handleStart()}
-        >
-          Start
-        </div>
-
         <div className="effectsBoard">
+          <div
+            className="StartButton"
+            onClick={() => this.handleStart('synth1')}
+            onTouchStart={() => this.handleStart('synth1')}
+          >
+            Start Synth1
+          </div>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStop('synth1')}
+            onTouchStart={() => this.handleStop('synth1')}
+          >
+            Stop Synth1
+          </div>
           <PolySynth
             text="Synth"
             synth="synth"
@@ -355,16 +505,112 @@ export default class Room3 extends React.Component {
         </div>
 
         <div className="effectsBoard">
+          <p>Noise</p>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStart('noise')}
+            onTouchStart={() => this.handleStart('noise')}
+          >
+            Start Noise
+          </div>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStop('noise')}
+            onTouchStart={() => this.handleStop('noise')}
+          >
+            Stop Noise
+          </div>
+          <Channel
+            {...this.state.noiseChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
+          />
+        </div>
+
+        <div className="effectsBoard">
+          <p>Sampler</p>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStart('sampler')}
+            onTouchStart={() => this.handleStart('sampler')}
+          >
+            Start Sampler
+          </div>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStop('sampler')}
+            onTouchStart={() => this.handleStop('sampler')}
+          >
+            Stop Sampler
+          </div>
+          <JcReverb
+            {...this.state.samplerReverb}
+            toggleEffect={() => this.toggleEffect('samplerReverb')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <BitCrusher
+            {...this.state.samplerBitCrusher}
+            toggleEffect={() => this.toggleEffect('samplerBitCrusher')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Distortion
+            {...this.state.samplerDistortion}
+            toggleEffect={() => this.toggleEffect('samplerDistortion')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <Channel
+            {...this.state.samplerChannel}
+            changeChannelValue={this.changeChannelValue}
+            toggleChannelValue={this.toggleChannelValue}
+          />
+        </div>
+
+        <div className="effectsBoard">
+          <div
+            className="StartButton"
+            onClick={() => this.handleStart('synth2')}
+            onTouchStart={() => this.handleStart('synth2')}
+          >
+            Start Synth2
+          </div>
+          <div
+            className="StartButton"
+            onClick={() => this.handleStop('synth2')}
+            onTouchStart={() => this.handleStop('synth2')}
+          >
+            Stop Synth2
+          </div>
           <ToneSynth
-            text="noise"
-            synth="noise"
-            instrument={this.state.noise}
+            text="Synth2"
+            synth="synth2"
+            instrument={this.state.synth2}
             on=""
             togglePlay=""
             changeSynthValue={this.changeSynthValue}
           />
+          <Distortion
+            {...this.state.synth2Distortion}
+            toggleEffect={() => this.toggleEffect('synth2Distortion')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <BitCrusher
+            {...this.state.synth2BitCrusher}
+            toggleEffect={() => this.toggleEffect('synth2BitCrusher')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
+          <JcReverb
+            {...this.state.synth2Reverb}
+            toggleEffect={() => this.toggleEffect('synth2Reverb')}
+            changeEffectWetValue={this.changeEffectWetValue}
+            changeEffectValue={this.changeEffectValue}
+          />
           <Channel
-            {...this.state.noiseChannel}
+            {...this.state.synth2Channel}
             changeChannelValue={this.changeChannelValue}
             toggleChannelValue={this.toggleChannelValue}
           />

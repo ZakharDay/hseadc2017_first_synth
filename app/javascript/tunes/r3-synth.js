@@ -35,15 +35,19 @@ function synth() {
 // }
 
 function distortion() {
-  return new Tone.Distortion({
-    distortion: 0.025,
+  let d = new Tone.Distortion({
+    distortion: 19,
     oversample: 'none'
   })
+
+  d.wet.value = 0.96
+
+  return d
 }
 
 function autoFilter() {
   let f = new Tone.AutoFilter({
-    frequency: 1,
+    frequency: 48,
     type: 'sine',
     depth: 1,
     baseFrequency: 200,
@@ -55,30 +59,42 @@ function autoFilter() {
     }
   })
 
-  // f.wet.value = 0
+  f.wet.value = 0.5
 
   return f
 }
 
 function bitCrusher() {
-  return new Tone.BitCrusher({
-    bits: 4
+  let b = new Tone.BitCrusher({
+    bits: 0.1
   })
+
+  b.wet.value = 0.84
+
+  return b
 }
 
 function vibrato() {
-  return new Tone.Vibrato({
-    maxDelay: 0.005,
-    frequency: 5,
-    depth: 0.1,
-    type: 'sine'
+  let v = new Tone.Vibrato({
+    maxDelay: 0.621,
+    frequency: 383,
+    depth: 0.38,
+    type: 'square'
   })
+
+  v.wet.value = 0.21
+
+  return v
 }
 
 function reverb() {
-  return new Tone.JCReverb({
-    roomSize: 0.5
+  let r = new Tone.JCReverb({
+    roomSize: 0.9
   })
+
+  r.wet.value = 0.95
+
+  return r
 }
 
 function randomNote(octave) {
