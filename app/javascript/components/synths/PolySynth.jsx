@@ -86,7 +86,7 @@ export default class PolySynth extends React.Component {
               name={synth}
               property="oscillator.phase"
               min="0"
-              max="10"
+              max="100"
               value={phase}
               handleValueChange={this.handleValueChange}
             />
