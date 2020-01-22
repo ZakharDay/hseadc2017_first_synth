@@ -1,5 +1,44 @@
 class SynthController < ApplicationController
   def index
+    # Current_distance is the distance from a user in the gallery to the sensor...
+    # it ranges from ~10mm to 1200mm... further than 1,2m nothing can be seen...
+    @current_distance = 0
+
+    respond_to do |format|
+      format.html {  }
+      format.json { render json: @current_distance  }
+      format.js   {  }
+    end
+  end
+
+  def set_current_distance
+    current_distance = params[:current_distance].to_i
+    operation = ['minus', 'plus'].sample
+    step_size = [1, 4, 10, 12, 22, 40, 64].sample
+    current_distance_min = 0
+    current_distance_max = 1200
+
+    if operation == 'minus'
+      if current_distance - step_size >= current_distance_min
+        current_distance = current_distance - step_size
+      else
+        current_distance = current_distance + step_size
+      end
+    elsif operation == 'plus'
+      if current_distance + step_size <= current_distance_max
+        current_distance = current_distance + step_size
+      else
+        current_distance = current_distance - step_size
+      end
+    end
+
+    puts "CURRENT DISTANCE #{current_distance}"
+
+    respond_to do |format|
+      format.html {  }
+      format.json { render json: current_distance  }
+      format.js   {  }
+    end
   end
 
   def save

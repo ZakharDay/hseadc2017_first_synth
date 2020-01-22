@@ -20,6 +20,7 @@ import PolySynth from '../components/synths/PolySynth'
 import ToneSynth from '../components/synths/ToneSynth'
 import MetalSynth from '../components/synths/MetalSynth'
 import Channel from '../components/utilities/Channel'
+import Sensor from '../components/utilities/Sensor'
 
 let bpm = 90
 const defaultWetValue = 1
@@ -86,10 +87,13 @@ export default class Room3 extends React.Component {
       'handleKeydown',
       'handleKeyup',
       'toggleNote',
-      'stopNote'
+      'stopNote',
+      'changeSensorValue',
+      'useSensorData'
     )
 
     this.state = {
+      sensor: 0,
       synth,
       synthFilter: {
         name: 'synthFilter',
@@ -293,8 +297,9 @@ export default class Room3 extends React.Component {
     this.stopNote()
   }
 
-  toggleNote(note) {
-    noise.triggerAttack(note, '16n')
+  toggleNote(note, synth) {
+    console.log(note, synth)
+    synth.triggerAttack(note, '16n')
   }
 
   stopNote() {
@@ -441,9 +446,39 @@ export default class Room3 extends React.Component {
     })
   }
 
+  changeSensorValue(name, property, value) {
+    console.log('changeSensorValue VALUE', value)
+
+    this.setState({
+      sensor: value
+    })
+
+    // this.useSensorData(value)
+    if (this.state.sensor < 100) {
+      console.log('TOGGLE')
+      this.toggleNote('B6', this.state.noise)
+    }
+
+    if (this.state.sensor > 500) {
+      console.log('TOGGLE')
+      this.toggleNote('B6', this.state.noise)
+    }
+  }
+
+  // Trigger for sensor data
+  useSensorData(value) {
+    let effect = this.state.synthDistortion
+    // value = props.data
+    this.changeEffectWetValue(effect.name, 'wet', value)
+  }
+
   render() {
     return (
       <div>
+        <Sensor
+          sensor={this.state.sensor}
+          changeSensorValue={this.changeSensorValue}
+        />
         <div className="effectsBoard">
           <div
             className="StartButton"
