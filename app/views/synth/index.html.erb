@@ -22,7 +22,6 @@
       headers,
     }).then(response => {
       response.json().then(function(data) {
-        console.log(data);
         h1.innerText = data
 
         document.getElementById('root').setAttribute('props', data)

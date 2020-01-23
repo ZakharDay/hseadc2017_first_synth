@@ -38,9 +38,10 @@ export default class Channel extends React.Component {
             <Slider
               min={-80}
               max={6}
-              marks={{ 0: '0' }}
-              defaultValue={volume}
-              handle={data => changeChannelValue(name, 'volume', data.value)}
+              value={volume}
+              name={name}
+              property={'volume'}
+              handleValueChange={changeChannelValue}
             />
 
             <h2>Pan</h2>
