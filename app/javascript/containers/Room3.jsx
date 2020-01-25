@@ -292,11 +292,10 @@ export default class Room3 extends React.Component {
 
     // this.useSensorData(value)
 
-    if (
-      (this.state.sensor >= 1000 && this.state.previousSensor <= 1000) ||
-      (this.state.sensor <= 1000 && this.state.previousSensor >= 1000)
-    ) {
+    if (this.state.sensor >= 1000 && this.state.previousSensor <= 1000) {
       this.triggerPauseSituation()
+    } else if (this.state.sensor <= 1000 && this.state.previousSensor >= 1000) {
+      this.triggerPlaySituation()
     }
   }
 
@@ -314,6 +313,20 @@ export default class Room3 extends React.Component {
 
     while (this.state.bassSynthChannel.volume >= -80) {
       let nextValue = this.state.bassSynthChannel.volume - 0.1
+      this.changeChannelValue('bassSynthChannel', 'volume', nextValue)
+    }
+  }
+
+  triggerPlaySituation() {
+    console.log('triggerPlaySituation')
+
+    while (this.state.noiseChannel.volume >= -80) {
+      let nextValue = this.state.noiseChannel.volume - 0.1
+      this.changeChannelValue('noiseChannel', 'volume', nextValue)
+    }
+
+    while (this.state.bassSynthChannel.volume <= -27) {
+      let nextValue = this.state.bassSynthChannel.volume + 0.1
       this.changeChannelValue('bassSynthChannel', 'volume', nextValue)
     }
   }
