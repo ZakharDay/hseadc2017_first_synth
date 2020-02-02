@@ -116,8 +116,10 @@ export default class Room3 extends React.Component {
         self.setState(
           {sensor: data.measurment}
         )
-        // console.log("success", data)
+
+        self.changeSensorValue()
       }
+      console.log("success", data.measurment, self.state.sensor)
     }).fail(function() {
       // console.log("error")
     }).always(function() {

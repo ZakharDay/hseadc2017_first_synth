@@ -1,4 +1,5 @@
 import _, { merge } from 'lodash'
+import $ from 'jquery'
 import React from 'react'
 import Tone from 'tone'
 let unmuteAudio = require('unmute-ios-audio')
@@ -129,6 +130,41 @@ export default class Room1 extends React.Component {
         solo: false
       }
     }
+  }
+
+  componentDidMount() {
+    this.getSensorData()
+  }
+
+  getSensorData() {
+    let self = this
+
+    $.ajax({
+      url: 'http://localhost:3000/serial_port/read',
+      dataType: 'json'
+    })
+      .done(function(data) {
+        if (data.measurment < 2500 && data.measurment != 0) {
+          self.setState({
+            sensor1: {
+              currentValue: data.measurment
+            }
+          })
+
+          self.changeSensorValue('sensor1', data.measurment)
+        }
+        // console.log("success", data.measurment, self.state.sensor1.currentValue)
+      })
+      .fail(function() {
+        // console.log("error")
+      })
+      .always(function() {
+        // console.log("complete")
+      })
+
+    setTimeout(function() {
+      self.getSensorData()
+    }, 50)
   }
 
   changeSynthValue(synthName, effectName, value) {
@@ -312,7 +348,7 @@ export default class Room1 extends React.Component {
   }
 
   changeSensorValue(sensorName, value) {
-    console.log('changeSensorValue', sensorName, value)
+    // console.log('changeSensorValue', sensorName, value)
     let previousValue = this.state[sensorName].currentValue
 
     this.setState({
@@ -331,6 +367,19 @@ export default class Room1 extends React.Component {
           'roomSize.value',
           calculatedValue
         )
+        this.changeEffectValue(
+          'soloSynthTremolo',
+          'frequency.value',
+          calculatedValue * 100
+        )
+        this.changeEffectValue(
+          'soloSynthVibrato',
+          'frequency.value',
+          calculatedValue * 100
+        )
+        this.changeSynthValue('soloSynth', 'envelope.sustain', calculatedValue)
+        this.changeSynthValue('soloSynth', 'envelope.decay', calculatedValue)
+        this.changeSynthValue('soloSynth', 'envelope.release', calculatedValue)
         break
     }
   }

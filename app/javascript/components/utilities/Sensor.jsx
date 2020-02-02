@@ -8,8 +8,9 @@ export default class Sensor extends React.Component {
   }
 
   render() {
-    const { name, currentValue, previousValue, changeSensorValue } = this.props
-    let roundValue = Math.round(currentValue)
+    const { sensor, name, currentValue, previousValue, changeSensorValue } = this.props
+    // let roundValue = Math.round(currentValue)
+    let roundValue = currentValue
 
     return (
       <div className="Effect">
