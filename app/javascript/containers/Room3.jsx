@@ -45,6 +45,7 @@ export default class Room3 extends React.Component {
 
     _.bindAll(
       this,
+      'getSensorData',
       'handleStart',
       'handleStop',
       'changeSynthValue',
@@ -101,20 +102,29 @@ export default class Room3 extends React.Component {
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown)
     document.addEventListener('keyup', this.handleKeyup)
+    this.getSensorData()
+  }
+
+  getSensorData() {
+    let self = this
 
     $.ajax({
       url: "http://localhost:3000/serial_port/read",
       dataType: "json"
     }).done(function(data) {
-      this.setState(
-        sensor: data.measurment
-      )
-      // console.log("success", data)
+      if (data.measurment < 2500 && data.measurment != 0) {
+        self.setState(
+          {sensor: data.measurment}
+        )
+        // console.log("success", data)
+      }
     }).fail(function() {
       // console.log("error")
     }).always(function() {
       // console.log("complete")
     })
+
+    setTimeout(function () { self.getSensorData() }, 50)
   }
 
   handleStart() {
@@ -189,7 +199,7 @@ export default class Room3 extends React.Component {
   }
 
   changeChannelValue(channelName, valueName, value) {
-    console.log(channelName, valueName, value)
+    // console.log(channelName, valueName, value)
     let { name, channel, pan, volume, mute, solo } = this.state[channelName]
     let shouldComponentUpdate = false
 

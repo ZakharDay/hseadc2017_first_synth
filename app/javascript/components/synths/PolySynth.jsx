@@ -24,7 +24,7 @@ export default class PolySynth extends React.Component {
     // prettier-ignore
     const curveSet = ['linear', 'exponential', 'sine', 'cosine', 'bounce', 'ripple', 'step']
     const { text, synth, instrument, on, togglePlay } = this.props
-    console.log(synth, instrument)
+    // console.log(synth, instrument)
 
     const {
       type,
@@ -34,7 +34,7 @@ export default class PolySynth extends React.Component {
       fadeIn
     } = instrument.voices[0].oscillator
 
-    console.log(type, count, spread)
+    // console.log(type, count, spread)
 
     const {
       attack,

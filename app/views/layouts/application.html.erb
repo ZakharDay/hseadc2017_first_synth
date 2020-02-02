@@ -16,54 +16,6 @@
     <%#= javascript_pack_tag 'room1' %>
     <%#= javascript_pack_tag 'room2' %>
     <%= javascript_pack_tag 'room3' %>
-
-    <script type="text/javascript">
-      var c1 = 0
-      var c2 = 0
-      var c3 = 0
-
-      function readResistance() {
-        $.ajax({
-          url: "http://localhost:3000/serial_port/read",
-          dataType: "json"
-        }).done(function(data) {
-          console.log("success", data)
-          //let d = JSON.parse(data)
-          document.getElementById("serialPort").setAttribute("data-resistance", data.measurment)
-        }).fail(function() {
-          console.log("error")
-        }).always(function() {
-          // console.log("complete")
-        })
-
-        // var r1 = getResistanceFromDOM(1)
-        // var r2 = getResistanceFromDOM(2)
-        // var r3 = getResistanceFromDOM(3)
-
-        // changeRectangleCSS(r1, r2, r3)
-
-        // $('body').append("<div>" +  + "</div>")
-
-        // console.log(r1, r2, r3)
-
-        setTimeout(function () { readResistance() }, 50)
-      }
-
-      function getResistanceFromDOM(position) {
-        // console.log($('div'))
-        // console.log($('div')[position])
-        return $("div:nth-child(" + position + ")").html()
-      }
-
-      $(function() {
-        console.log("DOM Ready")
-
-        if ($("#serialPort").length) {
-          console.log("True")
-          readResistance()
-        }
-      })
-    </script>
   </head>
 
   <body>
