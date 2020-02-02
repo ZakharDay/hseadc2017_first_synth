@@ -8,21 +8,23 @@ export default class Sensor extends React.Component {
   }
 
   render() {
-    const { sensor, changeSensorValue } = this.props
-    let sensorRound = Math.round(sensor)
+    const { name, currentValue, previousValue, changeSensorValue } = this.props
+    let roundValue = Math.round(currentValue)
 
     return (
       <div className="Effect">
         <div className="controlsContainer">
           <div className="controlsRow">
-            <h2>Sensor {sensorRound}</h2>
+            <h2>
+              {name} {roundValue}
+            </h2>
             <Slider
-              name="sensor"
-              property="sensor"
               min="0"
               max="1200"
-              value={sensorRound}
+              value={roundValue}
               handleValueChange={changeSensorValue}
+              name="sensor"
+              sensorName={name}
             />
           </div>
         </div>

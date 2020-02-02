@@ -79,13 +79,25 @@ export default class Slider extends React.Component {
 
   moveThumb(screenX) {
     const { x, width } = this.slideArea.current.getBoundingClientRect()
-    const { name, property, min, max, handleValueChange } = this.props
+    const {
+      name,
+      sensorName,
+      property,
+      min,
+      max,
+      handleValueChange
+    } = this.props
     const areaRight = this.calculateRight(x, width)
     const thumbLeft = screenX - x
 
     if (thumbLeft >= 0 && screenX <= areaRight) {
       const value = this.calculateValue(width, thumbLeft)
-      handleValueChange(name, property, value)
+
+      if (name == 'sensor') {
+        handleValueChange(sensorName, value)
+      } else {
+        handleValueChange(name, property, value)
+      }
 
       this.setState({
         thumbLeft
