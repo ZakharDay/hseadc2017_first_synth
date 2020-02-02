@@ -1,4 +1,5 @@
 import _, { merge } from 'lodash'
+import $ from 'jquery'
 import React from 'react'
 import Tone from 'tone'
 let unmuteAudio = require('unmute-ios-audio')
@@ -100,6 +101,20 @@ export default class Room3 extends React.Component {
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown)
     document.addEventListener('keyup', this.handleKeyup)
+
+    $.ajax({
+      url: "http://localhost:3000/serial_port/read",
+      dataType: "json"
+    }).done(function(data) {
+      this.setState(
+        sensor: data.measurment
+      )
+      // console.log("success", data)
+    }).fail(function() {
+      // console.log("error")
+    }).always(function() {
+      // console.log("complete")
+    })
   }
 
   handleStart() {

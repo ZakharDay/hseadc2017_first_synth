@@ -1,0 +1,7 @@
+<%
+  # resistance = $ohm_meter.get_resistance
+  resistance = @measurment
+%>
+
+console.log(<%= resistance %>)
+document.getElementById("serialPort").setAttribute("data-resistance", <%= resistance %>)
