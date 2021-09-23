@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Exhibition from '../containers/Exhibition'
+import Test from '../containers/Test'
 
 document.addEventListener('DOMContentLoaded', () => {
   const data = JSON.parse(document.getElementById('data').dataset.props)
 
   ReactDOM.render(
-    <Exhibition {...data} />,
+    <Test {...data} />,
     document.body.appendChild(document.createElement('div'))
   )
 })
