@@ -4,10 +4,8 @@ import ReactDOM from 'react-dom'
 import Performance from '../containers/Performance'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const data = JSON.parse(document.getElementById('data').dataset.props)
-
   ReactDOM.render(
-    <Performance {...data} />,
+    <Performance />,
     document.body.appendChild(document.createElement('div'))
   )
 })
